@@ -1,0 +1,36 @@
+{
+  "name": "create-vue-mini",
+  "version": "0.0.1",
+  "description": "Vue Mini 脚手架",
+  "type": "module",
+  "bin": {
+    "create-vue-mini": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template"
+  ],
+  "engines": {
+    "node": ">=v18.19.1"
+  },
+  "scripts": {
+    "format": "prettier --check \"**/*.{js,cjs,ts,json,md}\"",
+    "lint": "eslint --ext .js,.cjs,.ts .",
+    "type": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "repository": "https://github.com/vue-mini/create-vue-mini.git",
+  "author": "Yang Mingshan <y.mingshan3@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "kolorist": "^1.8.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "@types/prompts": "^2.4.9",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5",
+    "xo": "^0.58.0"
+  }
+}

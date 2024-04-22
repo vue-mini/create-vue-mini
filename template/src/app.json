@@ -1,0 +1,28 @@
+{
+  "pages": ["pages/home/index", "pages/mine/index"],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "vue-mini-project"
+  },
+  "tabBar": {
+    "color": "#000",
+    "selectedColor": "#000",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "text": "Home",
+        "pagePath": "pages/home/index",
+        "iconPath": "/assets/home.png",
+        "selectedIconPath": "/assets/home-selected.png"
+      },
+      {
+        "text": "Mine",
+        "pagePath": "pages/mine/index",
+        "iconPath": "/assets/mine.png",
+        "selectedIconPath": "/assets/mine-selected.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}
