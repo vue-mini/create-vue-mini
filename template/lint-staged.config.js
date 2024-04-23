@@ -12,9 +12,7 @@ const config = {
     `prettier --write ${filenames.join(' ')}`,
     `stylelint ${filenames.join(' ')}`,
   ],
-  '**/*.html': (filenames) => [
-    `prettier --write ${filenames.join(' ')}`,
-  ],
+  '**/*.html': (filenames) => [`prettier --write ${filenames.join(' ')}`],
   '**/*.json': (filenames) => [`prettier --write ${filenames.join(' ')}`],
   '**/*.md': (filenames) => [`prettier --write ${filenames.join(' ')}`],
 };

@@ -255,7 +255,7 @@ async function init() {
   }
 
   console.log(`  ${bold(green('pnpm install'))}`)
-  // Console.log(`  ${bold(green('pnpm format'))}`)
+  console.log(`  ${bold(green('pnpm format'))}`)
   console.log(`  ${bold(green('pnpm dev'))}`)
   console.log()
 }

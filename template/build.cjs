@@ -291,10 +291,8 @@ async function prod() {
 }
 
 if (__PROD__) {
-  // eslint-disable-next-line unicorn/prefer-top-level-await
   prod();
 } else {
   spawn('serve', ['src'], { stdio: 'inherit', shell: true });
-  // eslint-disable-next-line unicorn/prefer-top-level-await
   dev();
 }
