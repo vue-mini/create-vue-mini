@@ -5,8 +5,6 @@
 import PromisePolyfill from 'promise-polyfill';
 // eslint-disable-next-line no-global-assign, @typescript-eslint/no-unsafe-assignment
 Promise = PromisePolyfill;
-// eslint-disable-next-line import/first, import/no-unassigned-import
-import 'regenerator-runtime';
 // eslint-disable-next-line import/first
 import { createApp } from '@vue-mini/core';
 

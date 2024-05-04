@@ -45,7 +45,6 @@ const config = ({ env }) => ({
     [
       '@babel/plugin-transform-runtime',
       {
-        regenerator: false,
         version: runtimeVersion,
       },
     ],

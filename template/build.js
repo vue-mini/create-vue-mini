@@ -1,23 +1,24 @@
-'use strict';
-
-const os = require('node:os');
-const path = require('node:path');
-const crypto = require('node:crypto');
-const process = require('node:process');
-const { spawn } = require('node:child_process');
-const fs = require('fs-extra');
-const chokidar = require('chokidar');
-const babel = require('@babel/core');
-const { minify } = require('terser');
-const posthtml = require('posthtml');
-const less = require('less');
-const postcss = require('postcss');
-const pxtorpx = require('postcss-pxtorpx-pro');
-const url = require('postcss-url');
-const rollup = require('rollup');
-const { default: replace } = require('@rollup/plugin-replace');
-const { default: terser } = require('@rollup/plugin-terser');
-const { default: resolve } = require('@rollup/plugin-node-resolve');
+import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import process from 'node:process';
+import { spawn } from 'node:child_process';
+import fs from 'fs-extra';
+import chokidar from 'chokidar';
+import babel from '@babel/core';
+import traverse from '@babel/traverse';
+import t from '@babel/types';
+import { minify } from 'terser';
+import posthtml from 'posthtml';
+import less from 'less';
+import postcss from 'postcss';
+import pxtorpx from 'postcss-pxtorpx-pro';
+import url from 'postcss-url';
+import { rollup } from 'rollup';
+import replace from '@rollup/plugin-replace';
+import terser from '@rollup/plugin-terser';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const __PROD__ = NODE_ENV === 'production';
@@ -29,10 +30,6 @@ const terserOptions = {
   safari10: true,
   format: { comments: false },
 };
-
-process.on('unhandledRejection', (error) => {
-  throw error;
-});
 
 function getLocalIP() {
   const ifaces = Object.values(os.networkInterfaces());
@@ -59,49 +56,10 @@ async function bundleModule(module) {
   if (bundledModules.has(module)) return;
   bundledModules.add(module);
 
-  if (module === 'regenerator-runtime') {
-    const filePath = require.resolve(module);
-    const destination = `dist/miniprogram_npm/${module}/index.js`;
-    // Make sure the directory already exists when write file in production build
-    await fs.copy(filePath, destination);
-
-    if (__PROD__) {
-      fs.writeFile(
-        destination,
-        // eslint-disable-next-line unicorn/no-await-expression-member
-        (await minify(await fs.readFile(filePath, 'utf8'), terserOptions)).code,
-      );
-    }
-
-    return;
-  }
-
-  let pkg;
-  try {
-    pkg = require(`${module}/package.json`);
-  } catch {}
-
-  if (pkg && !pkg.module) {
-    throw new Error(`Can't found esm bundle of ${module}`);
-  }
-
-  let entry = pkg
-    ? path.join(
-        path.dirname(require.resolve(`${module}/package.json`)),
-        pkg.module,
-      )
-    : require.resolve(module);
-
-  if (module.startsWith('@babel/runtime/')) {
-    const paths = entry.split(path.sep);
-    paths.splice(-1, 0, 'esm');
-    // Path.join 在 POSIX OS 上会返回 'root/**' 而非正确的 '/root/**'，所以不能使用。
-    entry = paths.join(path.sep);
-  }
-
-  const bundle = await rollup.rollup({
-    input: entry,
+  const bundle = await rollup({
+    input: module,
     plugins: [
+      commonjs(),
       replace({
         preventAssignment: true,
         values: {
@@ -120,11 +78,23 @@ async function bundleModule(module) {
 }
 
 async function processScript(filePath) {
-  let { code } = await babel.transformFileAsync(path.resolve(filePath));
-  for (const [, module] of code.matchAll(/require\("(.+?)"\)/g)) {
-    if (module.startsWith('.')) continue;
-    bundleModule(module);
-  }
+  let { ast, code } = await babel.transformFileAsync(path.resolve(filePath), {
+    ast: true,
+  });
+
+  traverse.default(ast, {
+    CallExpression({ node }) {
+      if (
+        node.callee.name !== 'require' ||
+        !t.isStringLiteral(node.arguments[0]) ||
+        node.arguments[0].value.startsWith('.')
+      ) {
+        return;
+      }
+
+      bundleModule(node.arguments[0].value);
+    },
+  });
 
   if (__PROD__) {
     // eslint-disable-next-line unicorn/no-await-expression-member
@@ -291,8 +261,8 @@ async function prod() {
 }
 
 if (__PROD__) {
-  prod();
+  await prod();
 } else {
   spawn('serve', ['src'], { stdio: 'inherit', shell: true });
-  dev();
+  await dev();
 }
