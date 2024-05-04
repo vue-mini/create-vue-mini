@@ -13,14 +13,14 @@
       {
         "text": "Home",
         "pagePath": "pages/home/index",
-        "iconPath": "/assets/home.png",
-        "selectedIconPath": "/assets/home-selected.png"
+        "iconPath": "/images/home.png",
+        "selectedIconPath": "/images/home-selected.png"
       },
       {
         "text": "Mine",
         "pagePath": "pages/mine/index",
-        "iconPath": "/assets/mine.png",
-        "selectedIconPath": "/assets/mine-selected.png"
+        "iconPath": "/images/mine.png",
+        "selectedIconPath": "/images/mine-selected.png"
       }
     ]
   },

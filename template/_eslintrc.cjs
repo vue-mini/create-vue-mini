@@ -2,27 +2,26 @@
 
 module.exports = {
   root: true,
-  extends: ['xo', require.resolve('xo/config/plugins.cjs'), 'prettier'],
-  ignorePatterns: ['dist', 'coverage'],
-  rules: {
-    'no-console': 'error',
-    'unicorn/prevent-abbreviations': 'off',
-    'import/extensions': ['error', 'never', { json: 'always' }],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
+  env: {
+    es2021: true,
+    node: true,
+  },
+  reportUnusedDisableDirectives: true,
+  ignorePatterns: ['dist', 'coverage'],
+  extends: ['eslint:recommended', 'prettier'],
   overrides: [
     {
       files: ['*.ts'],
-      extends: ['xo-typescript', 'prettier'],
+      extends: ['plugin:@typescript-eslint/recommended', 'prettier'],
       parserOptions: {
         project: './tsconfig.json',
       },
     },
   ],
-  settings: {
-    'import/resolver': {
-      typescript: {},
-    },
-  },
   globals: {
     wx: 'readonly',
     getApp: 'readonly',

@@ -1,5 +1,4 @@
 const config = {
-  customSyntax: 'postcss-less',
   extends: 'stylelint-config-standard',
   rules: {
     'alpha-value-notation': 'number',

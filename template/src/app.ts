@@ -3,12 +3,10 @@
 // 此处将全局的 Promise 变量重写为自定义的 Polyfill，如果你不需要兼容 iOS10 也可以使用以下方式：
 // Promise = Object.getPrototypeOf((async () => {})()).constructor;
 import PromisePolyfill from 'promise-polyfill';
-// eslint-disable-next-line no-global-assign, @typescript-eslint/no-unsafe-assignment
+// eslint-disable-next-line no-global-assign
 Promise = PromisePolyfill;
-// eslint-disable-next-line import/first
 import { createApp } from '@vue-mini/core';
 
 createApp(() => {
-  // eslint-disable-next-line no-console
   console.log('App Launched!');
 });

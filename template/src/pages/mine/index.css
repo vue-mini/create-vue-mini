@@ -5,9 +5,7 @@
 .logo {
   width: 400px;
   height: 400px;
-  margin: 120px auto 0;
-  background-image: url('/images/vue-mini.png');
-  background-size: 100% 100%;
+  margin-top: 120px;
 }
 
 .greeting {
