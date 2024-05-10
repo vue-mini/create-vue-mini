@@ -144,6 +144,16 @@ function renderTemplate(src: string, dest: string, packageName: string) {
   fs.copyFileSync(src, dest)
 }
 
+function getCommand(packageManager: string, scriptName: string) {
+  if (scriptName === 'install') {
+    return packageManager === 'yarn' ? 'yarn' : `${packageManager} install`
+  }
+
+  return packageManager === 'npm' ?
+      `npm run ${scriptName}`
+    : `${packageManager} ${scriptName}`
+}
+
 async function init() {
   console.log()
   console.log(
@@ -246,6 +256,14 @@ async function init() {
     packageName,
   )
 
+  // Instructions:
+  // Supported package managers: pnpm > yarn > npm
+  const userAgent = process.env.npm_config_user_agent ?? ''
+  const packageManager =
+    userAgent.includes('pnpm') ? 'pnpm'
+    : userAgent.includes('yarn') ? 'yarn'
+    : 'npm'
+
   console.log(`\n项目初始化完成，可执行以下命令：\n`)
   if (root !== cwd) {
     const cdProjectName = path.relative(cwd, root)
@@ -254,9 +272,9 @@ async function init() {
     )
   }
 
-  console.log(`  ${bold(green('pnpm install'))}`)
-  console.log(`  ${bold(green('pnpm format'))}`)
-  console.log(`  ${bold(green('pnpm dev'))}`)
+  console.log(`  ${bold(green(getCommand(packageManager, 'install')))}`)
+  console.log(`  ${bold(green(getCommand(packageManager, 'format')))}`)
+  console.log(`  ${bold(green(getCommand(packageManager, 'dev')))}`)
   console.log()
 }
 
