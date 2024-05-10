@@ -89,7 +89,62 @@ function emptyDir(dir: string) {
   )
 }
 
-function renderTemplate(src: string, dest: string, packageName: string) {
+type Json = Record<string, unknown>
+
+function isObject(val: unknown): val is Json {
+  return Boolean(val) && typeof val === 'object'
+}
+
+function deepMerge(target: Json, obj: Json) {
+  for (const key of Object.keys(obj)) {
+    const oldVal = target[key]
+    const newVal = obj[key]
+
+    if (Array.isArray(oldVal) && Array.isArray(newVal)) {
+      target[key] = [...new Set([...oldVal, ...newVal])]
+    } else if (isObject(oldVal) && isObject(newVal)) {
+      target[key] = deepMerge(oldVal, newVal)
+    } else {
+      target[key] = newVal
+    }
+  }
+
+  return target
+}
+
+function sortPkg(pkg: Json) {
+  const sorted: {
+    scripts: Record<string, string>
+    devDependencies: Record<string, string>
+  } = {
+    scripts: {},
+    devDependencies: {},
+  }
+
+  const scripts = pkg.scripts as Record<string, string>
+  for (const name of [
+    'format',
+    'lint:script',
+    'lint:style',
+    'type',
+    'test',
+    'dev',
+    'build',
+  ]) {
+    if (scripts[name]) {
+      sorted.scripts[name] = scripts[name]
+    }
+  }
+
+  const devDeps = pkg.devDependencies as Record<string, string>
+  for (const name of Object.keys(devDeps).sort()) {
+    sorted.devDependencies[name] = devDeps[name]
+  }
+
+  return { ...pkg, ...sorted }
+}
+
+function renderTemplate(src: string, dest: string, packageName?: string) {
   const stats = fs.statSync(src)
 
   if (stats.isDirectory()) {
@@ -112,24 +167,29 @@ function renderTemplate(src: string, dest: string, packageName: string) {
   const filename = path.basename(src)
 
   if (filename === 'package.json') {
-    const pkg = JSON.parse(fs.readFileSync(src, 'utf8')) as Record<string, any>
-    pkg.name = packageName
+    if (packageName) {
+      const pkg = JSON.parse(fs.readFileSync(src, 'utf8'))
+      pkg.name = packageName
+      fs.writeFileSync(dest, JSON.stringify(pkg, null, 2) + '\n')
+      return
+    }
+
+    const existing = JSON.parse(fs.readFileSync(dest, 'utf8')) as Json
+    const newPackage = JSON.parse(fs.readFileSync(src, 'utf8')) as Json
+    const pkg = sortPkg(deepMerge(existing, newPackage))
     fs.writeFileSync(dest, JSON.stringify(pkg, null, 2) + '\n')
     return
   }
 
   if (filename === 'project.config.json') {
-    const project = JSON.parse(fs.readFileSync(src, 'utf8')) as Record<
-      string,
-      any
-    >
+    const project = JSON.parse(fs.readFileSync(src, 'utf8'))
     project.projectname = packageName
     fs.writeFileSync(dest, JSON.stringify(project, null, 2) + '\n')
     return
   }
 
   if (filename === 'app.json') {
-    const app = JSON.parse(fs.readFileSync(src, 'utf8')) as Record<string, any>
+    const app = JSON.parse(fs.readFileSync(src, 'utf8'))
     app.window.navigationBarTitleText = packageName
     fs.writeFileSync(dest, JSON.stringify(app, null, 2) + '\n')
     return
@@ -171,6 +231,7 @@ async function init() {
     projectName?: string
     shouldOverwrite?: boolean
     packageName?: string
+    needsPrettier?: boolean
   } = {}
 
   try {
@@ -220,6 +281,14 @@ async function init() {
           validate: (dir: string) =>
             isValidPackageName(dir) || '无效的 package.json 名称',
         },
+        {
+          name: 'needsPrettier',
+          type: 'toggle',
+          message: '是否引入 Prettier 用于代码格式化？',
+          initial: false,
+          active: '是',
+          inactive: '否',
+        },
       ],
       {
         onCancel() {
@@ -238,6 +307,7 @@ async function init() {
     projectName,
     packageName = projectName ?? defaultProjectName,
     shouldOverwrite = false,
+    needsPrettier = false,
   } = result
 
   const root = path.join(cwd, targetDir)
@@ -250,11 +320,13 @@ async function init() {
 
   console.log(`\n正在初始化项目 ${root}...`)
 
-  renderTemplate(
-    new URL('template', import.meta.url).pathname,
-    root,
-    packageName,
-  )
+  const templateRoot = new URL('template', import.meta.url).pathname
+
+  renderTemplate(path.resolve(templateRoot, 'base'), root, packageName)
+
+  if (needsPrettier) {
+    renderTemplate(path.resolve(templateRoot, 'prettier'), root)
+  }
 
   // Instructions:
   // Supported package managers: pnpm > yarn > npm

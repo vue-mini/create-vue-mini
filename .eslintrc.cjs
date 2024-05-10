@@ -12,6 +12,9 @@ module.exports = {
       parserOptions: {
         project: './tsconfig.json',
       },
+      rules: {
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+      },
     },
   ],
 }
