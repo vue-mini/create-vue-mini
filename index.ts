@@ -231,6 +231,7 @@ async function init() {
     projectName?: string
     shouldOverwrite?: boolean
     packageName?: string
+    needsStylelint?: boolean
     needsPrettier?: boolean
   } = {}
 
@@ -282,6 +283,14 @@ async function init() {
             isValidPackageName(dir) || '无效的 package.json 名称',
         },
         {
+          name: 'needsStylelint',
+          type: 'toggle',
+          message: '是否引入 Stylelint 用于 CSS 代码质量检测？',
+          initial: false,
+          active: '是',
+          inactive: '否',
+        },
+        {
           name: 'needsPrettier',
           type: 'toggle',
           message: '是否引入 Prettier 用于代码格式化？',
@@ -307,6 +316,7 @@ async function init() {
     projectName,
     packageName = projectName ?? defaultProjectName,
     shouldOverwrite = false,
+    needsStylelint = false,
     needsPrettier = false,
   } = result
 
@@ -323,6 +333,10 @@ async function init() {
   const templateRoot = new URL('template', import.meta.url).pathname
 
   renderTemplate(path.resolve(templateRoot, 'base'), root, packageName)
+
+  if (needsStylelint) {
+    renderTemplate(path.resolve(templateRoot, 'stylelint'), root)
+  }
 
   if (needsPrettier) {
     renderTemplate(path.resolve(templateRoot, 'prettier'), root)
