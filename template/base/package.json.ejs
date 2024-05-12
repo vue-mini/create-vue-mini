@@ -1,10 +1,16 @@
 {
-  "name": "vue-mini-project",
+  "name": "<%- packageName %>",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
+    <%_ if (needsPrettier) { _%>
+    "format": "prettier --write \"**/*.{js,cjs,ts,json,css,html,md}\"",
+    <%_ } _%>
     "lint:script": "eslint --ext .js,.cjs,.ts .",
+    <%_ if (needsStylelint) { _%>
+    "lint:style": "stylelint \"src/**/*.css\"",
+    <%_ } _%>
     "type": "tsc",
     "test": "vitest",
     "dev": "cross-env NODE_ENV=development node build.js",
@@ -39,7 +45,14 @@
     "fs-extra": "^11.2.0",
     "postcss": "^8.4.38",
     "postcss-pxtorpx-pro": "^2.0.0",
+    <%_ if (needsPrettier) { _%>
+    "prettier": "^3.2.5",
+    <%_ } _%>
     "rollup": "^4.17.2",
+    <%_ if (needsStylelint) { _%>
+    "stylelint": "^16.5.0",
+    "stylelint-config-standard": "^36.0.0",
+    <%_ } _%>
     "terser": "^5.31.0",
     "typescript": "^5.4.5",
     "vitest": "^1.5.3"

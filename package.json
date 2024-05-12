@@ -24,10 +24,12 @@
   "author": "Yang Mingshan <y.mingshan3@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "ejs": "^3.1.10",
     "kolorist": "^1.8.0",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.5",
     "@types/node": "^20.12.8",
     "@types/prompts": "^2.4.9",
     "prettier": "^3.2.5",

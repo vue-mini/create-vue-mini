@@ -3,6 +3,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import ejs from 'ejs'
 import prompts from 'prompts'
 import { red, green, bold } from 'kolorist'
 
@@ -89,62 +90,15 @@ function emptyDir(dir: string) {
   )
 }
 
-type Json = Record<string, unknown>
-
-function isObject(val: unknown): val is Json {
-  return Boolean(val) && typeof val === 'object'
+type Result = {
+  projectName?: string
+  shouldOverwrite?: boolean
+  packageName?: string
+  needsStylelint?: boolean
+  needsPrettier?: boolean
 }
 
-function deepMerge(target: Json, obj: Json) {
-  for (const key of Object.keys(obj)) {
-    const oldVal = target[key]
-    const newVal = obj[key]
-
-    if (Array.isArray(oldVal) && Array.isArray(newVal)) {
-      target[key] = [...new Set([...oldVal, ...newVal])]
-    } else if (isObject(oldVal) && isObject(newVal)) {
-      target[key] = deepMerge(oldVal, newVal)
-    } else {
-      target[key] = newVal
-    }
-  }
-
-  return target
-}
-
-function sortPkg(pkg: Json) {
-  const sorted: {
-    scripts: Record<string, string>
-    devDependencies: Record<string, string>
-  } = {
-    scripts: {},
-    devDependencies: {},
-  }
-
-  const scripts = pkg.scripts as Record<string, string>
-  for (const name of [
-    'format',
-    'lint:script',
-    'lint:style',
-    'type',
-    'test',
-    'dev',
-    'build',
-  ]) {
-    if (scripts[name]) {
-      sorted.scripts[name] = scripts[name]
-    }
-  }
-
-  const devDeps = pkg.devDependencies as Record<string, string>
-  for (const name of Object.keys(devDeps).sort()) {
-    sorted.devDependencies[name] = devDeps[name]
-  }
-
-  return { ...pkg, ...sorted }
-}
-
-function renderTemplate(src: string, dest: string, packageName?: string) {
+function renderTemplate(src: string, dest: string, result: Result) {
   const stats = fs.statSync(src)
 
   if (stats.isDirectory()) {
@@ -157,7 +111,7 @@ function renderTemplate(src: string, dest: string, packageName?: string) {
           dest,
           /^_[a-z]/.test(file) ? file.replace('_', '.') : file,
         ),
-        packageName,
+        result,
       )
     }
 
@@ -166,38 +120,30 @@ function renderTemplate(src: string, dest: string, packageName?: string) {
 
   const filename = path.basename(src)
 
-  if (filename === 'package.json') {
-    if (packageName) {
-      const pkg = JSON.parse(fs.readFileSync(src, 'utf8'))
-      pkg.name = packageName
-      fs.writeFileSync(dest, JSON.stringify(pkg, null, 2) + '\n')
-      return
-    }
-
-    const existing = JSON.parse(fs.readFileSync(dest, 'utf8')) as Json
-    const newPackage = JSON.parse(fs.readFileSync(src, 'utf8')) as Json
-    const pkg = sortPkg(deepMerge(existing, newPackage))
-    fs.writeFileSync(dest, JSON.stringify(pkg, null, 2) + '\n')
+  if (filename.endsWith('.ejs')) {
+    const template = fs.readFileSync(src, 'utf8')
+    const content = ejs.render(template, result)
+    fs.writeFileSync(dest.replace(/\.ejs$/, ''), content)
     return
   }
 
   if (filename === 'project.config.json') {
     const project = JSON.parse(fs.readFileSync(src, 'utf8'))
-    project.projectname = packageName
+    project.projectname = result.packageName
     fs.writeFileSync(dest, JSON.stringify(project, null, 2) + '\n')
     return
   }
 
   if (filename === 'app.json') {
     const app = JSON.parse(fs.readFileSync(src, 'utf8'))
-    app.window.navigationBarTitleText = packageName
+    app.window.navigationBarTitleText = result.packageName
     fs.writeFileSync(dest, JSON.stringify(app, null, 2) + '\n')
     return
   }
 
   if (filename === 'README.md') {
     const readme = fs.readFileSync(src, 'utf8')
-    fs.writeFileSync(dest, `# ${packageName}\n\n${readme}`)
+    fs.writeFileSync(dest, `# ${result.packageName}\n\n${readme}`)
     return
   }
 
@@ -227,13 +173,7 @@ async function init() {
   let targetDir = process.argv[2]
   const defaultProjectName = targetDir ?? 'vue-mini-project'
 
-  let result: {
-    projectName?: string
-    shouldOverwrite?: boolean
-    packageName?: string
-    needsStylelint?: boolean
-    needsPrettier?: boolean
-  } = {}
+  let result: Result = {}
 
   try {
     // Prompts:
@@ -332,14 +272,24 @@ async function init() {
 
   const templateRoot = new URL('template', import.meta.url).pathname
 
-  renderTemplate(path.resolve(templateRoot, 'base'), root, packageName)
+  const render = (templateName: string) => {
+    renderTemplate(path.resolve(templateRoot, templateName), root, {
+      projectName,
+      packageName,
+      shouldOverwrite,
+      needsStylelint,
+      needsPrettier,
+    })
+  }
+
+  render('base')
 
   if (needsStylelint) {
-    renderTemplate(path.resolve(templateRoot, 'stylelint'), root)
+    render('stylelint')
   }
 
   if (needsPrettier) {
-    renderTemplate(path.resolve(templateRoot, 'prettier'), root)
+    render('prettier')
   }
 
   // Instructions:
