@@ -12,11 +12,19 @@ module.exports = {
   },
   reportUnusedDisableDirectives: true,
   ignorePatterns: ['dist', 'coverage'],
+  <%_ if (needsPrettier) { _%>
   extends: ['eslint:recommended', 'prettier'],
+  <%_ } else { _%>
+  extends: ['eslint:recommended'],
+  <%_ } _%>
   overrides: [
     {
       files: ['*.ts'],
+      <%_ if (needsPrettier) { _%>
       extends: ['plugin:@typescript-eslint/recommended', 'prettier'],
+      <%_ } else { _%>
+      extends: ['plugin:@typescript-eslint/recommended'],
+      <%_ } _%>
       parserOptions: {
         project: './tsconfig.json',
       },

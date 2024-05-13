@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     <%_ if (needsPrettier) { _%>
-    "format": "prettier --write \"**/*.{js,cjs,ts,json,css,html,md}\"",
+    "format": "prettier --write \"**/*.{js,<% if (needsEslint) { %>cjs,<% } %>ts,json,css,html,md}\"",
     <%_ } _%>
-    "lint:script": "eslint --ext .js,.cjs,.ts .",
+    <%_ if (needsEslint) { _%>
+    "lint<% if (needsStylelint) { %>:script<% } %>": "eslint --ext .js,.cjs,.ts .",
+    <%_ } _%>
     <%_ if (needsStylelint) { _%>
-    "lint:style": "stylelint \"src/**/*.css\"",
+    "lint<% if (needsEslint) { %>:style<% } %>": "stylelint \"src/**/*.css\"",
     <%_ } _%>
     "type": "tsc",
     "test": "vitest",
@@ -32,16 +34,22 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
+    <%_ if (needsEslint) { _%>
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
+    <%_ } _%>
     "@vitest/coverage-v8": "^1.5.3",
     "babel-plugin-autocomplete-index": "^0.2.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "chokidar": "^3.6.0",
     "cross-env": "^7.0.3",
+    <%_ if (needsEslint) { _%>
     "eslint": "^8.57.0",
+    <%_ if (needsPrettier) { _%>
     "eslint-config-prettier": "^9.1.0",
+    <%_ } _%>
+    <%_ } _%>
     "fs-extra": "^11.2.0",
     "postcss": "^8.4.38",
     "postcss-pxtorpx-pro": "^2.0.0",

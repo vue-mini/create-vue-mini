@@ -94,6 +94,7 @@ type Result = {
   projectName?: string
   shouldOverwrite?: boolean
   packageName?: string
+  needsEslint?: boolean
   needsStylelint?: boolean
   needsPrettier?: boolean
 }
@@ -223,6 +224,14 @@ async function init() {
             isValidPackageName(dir) || '无效的 package.json 名称',
         },
         {
+          name: 'needsEslint',
+          type: 'toggle',
+          message: '是否引入 ESLint 用于 TS 代码质量检测？',
+          initial: false,
+          active: '是',
+          inactive: '否',
+        },
+        {
           name: 'needsStylelint',
           type: 'toggle',
           message: '是否引入 Stylelint 用于 CSS 代码质量检测？',
@@ -254,8 +263,9 @@ async function init() {
   // so we still have to assign the default values here
   const {
     projectName,
-    packageName = projectName ?? defaultProjectName,
     shouldOverwrite = false,
+    packageName = projectName ?? defaultProjectName,
+    needsEslint = false,
     needsStylelint = false,
     needsPrettier = false,
   } = result
@@ -275,14 +285,19 @@ async function init() {
   const render = (templateName: string) => {
     renderTemplate(path.resolve(templateRoot, templateName), root, {
       projectName,
-      packageName,
       shouldOverwrite,
+      packageName,
+      needsEslint,
       needsStylelint,
       needsPrettier,
     })
   }
 
   render('base')
+
+  if (needsEslint) {
+    render('eslint')
+  }
 
   if (needsStylelint) {
     render('stylelint')
