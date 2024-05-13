@@ -14,7 +14,9 @@
     "lint<% if (needsEslint) { %>:style<% } %>": "stylelint \"src/**/*.css\"",
     <%_ } _%>
     "type": "tsc",
-    "test": "vitest",
+    <%_ if (needsVitest) { _%>
+    "test": "cross-env NODE_ENV=test vitest",
+    <%_ } _%>
     "dev": "cross-env NODE_ENV=development node build.js",
     "build": "cross-env NODE_ENV=production node build.js"
   },
@@ -38,7 +40,9 @@
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     <%_ } _%>
+    <%_ if (needsVitest) { _%>
     "@vitest/coverage-v8": "^1.5.3",
+    <%_ } _%>
     "babel-plugin-autocomplete-index": "^0.2.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
@@ -63,7 +67,9 @@
     <%_ } _%>
     "terser": "^5.31.0",
     "typescript": "^5.4.5",
+    <%_ if (needsVitest) { _%>
     "vitest": "^1.5.3"
+    <%_ } _%>
   },
   "browserslist": [
     "iOS >= 10",

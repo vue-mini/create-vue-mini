@@ -7,8 +7,8 @@ const runtimeVersion = JSON.parse(
   ),
 ).version;
 
-const config = {
-  targets: {},
+const config = ({ env }) => ({
+  targets: env('test') ? { node: 'current' } : {},
   assumptions: {
     arrayLikeIsIterable: true,
     constantReexports: true,
@@ -48,8 +48,8 @@ const config = {
         version: runtimeVersion,
       },
     ],
-    '@babel/plugin-transform-regenerator',
-    '@babel/plugin-transform-destructuring',
+    !env('test') && '@babel/plugin-transform-regenerator',
+    !env('test') && '@babel/plugin-transform-destructuring',
     'transform-inline-environment-variables',
     [
       'module-resolver',
@@ -60,7 +60,7 @@ const config = {
       },
     ],
     'autocomplete-index',
-  ],
-};
+  ].filter(Boolean),
+});
 
 export default config;

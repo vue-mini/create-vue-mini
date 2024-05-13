@@ -11,7 +11,11 @@ module.exports = {
     node: true,
   },
   reportUnusedDisableDirectives: true,
+  <%_ if (needsVitest) { _%>
   ignorePatterns: ['dist', 'coverage'],
+  <%_ } else { _%>
+  ignorePatterns: ['dist'],
+  <%_ } _%>
   <%_ if (needsPrettier) { _%>
   extends: ['eslint:recommended', 'prettier'],
   <%_ } else { _%>
