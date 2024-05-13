@@ -94,6 +94,7 @@ type Result = {
   projectName?: string
   shouldOverwrite?: boolean
   packageName?: string
+  needsTypeScript?: boolean
   needsVitest?: boolean
   needsEslint?: boolean
   needsStylelint?: boolean
@@ -124,7 +125,12 @@ function renderTemplate(src: string, dest: string, result: Result) {
 
   if (filename.endsWith('.ejs')) {
     const template = fs.readFileSync(src, 'utf8')
-    const content = ejs.render(template, result)
+    let content = ejs.render(template, result)
+
+    if (filename === 'package.json.ejs') {
+      content = content.replace(',\n    trailing-comma', '')
+    }
+
     fs.writeFileSync(dest.replace(/\.ejs$/, ''), content)
     return
   }
@@ -162,6 +168,7 @@ function getCommand(packageManager: string, scriptName: string) {
     : `${packageManager} ${scriptName}`
 }
 
+// eslint-disable-next-line complexity
 async function init() {
   console.log()
   console.log(
@@ -225,6 +232,14 @@ async function init() {
             isValidPackageName(dir) || '无效的 package.json 名称',
         },
         {
+          name: 'needsTypeScript',
+          type: 'toggle',
+          message: '是否使用 TypeScript 语法？',
+          initial: false,
+          active: '是',
+          inactive: '否',
+        },
+        {
           name: 'needsVitest',
           type: 'toggle',
           message: '是否引入 Vitest 用于单元测试？',
@@ -235,7 +250,8 @@ async function init() {
         {
           name: 'needsEslint',
           type: 'toggle',
-          message: '是否引入 ESLint 用于 TS 代码质量检测？',
+          message: (_, values) =>
+            `是否引入 ESLint 用于 ${values.needsTypeScript ? 'TS' : 'JS'} 代码质量检测？`,
           initial: false,
           active: '是',
           inactive: '否',
@@ -274,6 +290,7 @@ async function init() {
     projectName,
     shouldOverwrite = false,
     packageName = projectName ?? defaultProjectName,
+    needsTypeScript = false,
     needsVitest = false,
     needsEslint = false,
     needsStylelint = false,
@@ -297,6 +314,7 @@ async function init() {
       projectName,
       shouldOverwrite,
       packageName,
+      needsTypeScript,
       needsVitest,
       needsEslint,
       needsStylelint,
@@ -305,6 +323,12 @@ async function init() {
   }
 
   render('base')
+
+  if (needsTypeScript) {
+    render('typescript')
+  } else {
+    render('javascript')
+  }
 
   if (needsEslint) {
     render('eslint')
@@ -320,7 +344,11 @@ async function init() {
 
   // Vitest should be the last one to render.
   if (needsVitest) {
-    render('vitest')
+    if (needsTypeScript) {
+      render('vitest-typescript')
+    } else {
+      render('vitest')
+    }
   }
 
   // Instructions:

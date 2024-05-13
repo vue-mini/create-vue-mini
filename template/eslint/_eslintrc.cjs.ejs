@@ -21,6 +21,7 @@ module.exports = {
   <%_ } else { _%>
   extends: ['eslint:recommended'],
   <%_ } _%>
+  <%_ if (needsTypeScript) { _%>
   overrides: [
     {
       files: ['*.ts'],
@@ -34,6 +35,7 @@ module.exports = {
       },
     },
   ],
+  <%_ } _%>
   globals: {
     wx: 'readonly',
     getApp: 'readonly',

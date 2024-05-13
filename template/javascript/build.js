@@ -72,7 +72,7 @@ async function processScript(filePath) {
     code = (await minify(code, terserOptions)).code;
   }
 
-  const destination = filePath.replace('src', 'dist').replace(/\.ts$/, '.js');
+  const destination = filePath.replace('src', 'dist');
   // Make sure the directory already exists when write file
   await fs.copy(filePath, destination);
   fs.writeFile(destination, code);
@@ -101,7 +101,7 @@ async function processStyle(filePath) {
 async function dev() {
   await fs.remove('dist');
   const cb = (filePath) => {
-    if (/\.ts$/.test(filePath)) {
+    if (/\.js$/.test(filePath)) {
       processScript(filePath);
       return;
     }
@@ -133,12 +133,11 @@ async function dev() {
 
 async function prod() {
   await fs.remove('dist');
-  await fs.remove('temp');
   const watcher = chokidar.watch(['src'], {
     ignored: ['**/.{gitkeep,DS_Store}'],
   });
   watcher.on('add', (filePath) => {
-    if (/\.ts$/.test(filePath)) {
+    if (/\.js$/.test(filePath)) {
       processScript(filePath);
       return;
     }

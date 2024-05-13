@@ -5,15 +5,17 @@
   "type": "module",
   "scripts": {
     <%_ if (needsPrettier) { _%>
-    "format": "prettier --write \"**/*.{js,<% if (needsEslint) { %>cjs,<% } %>ts,json,css,html,md}\"",
+    "format": "prettier --write \"**/*.{js<% if (needsEslint) { %>,cjs<% } %><% if (needsTypeScript) { %>,ts<% } %>,json,css,html,md}\"",
     <%_ } _%>
     <%_ if (needsEslint) { _%>
-    "lint<% if (needsStylelint) { %>:script<% } %>": "eslint --ext .js,.cjs,.ts .",
+    "lint<% if (needsStylelint) { %>:script<% } %>": "eslint --ext .js,.cjs<% if (needsTypeScript) { %>,.ts<% } %> .",
     <%_ } _%>
     <%_ if (needsStylelint) { _%>
     "lint<% if (needsEslint) { %>:style<% } %>": "stylelint \"src/**/*.css\"",
     <%_ } _%>
+    <%_ if (needsTypeScript) { _%>
     "type": "tsc",
+    <%_ } _%>
     <%_ if (needsVitest) { _%>
     "test": "cross-env NODE_ENV=test vitest",
     <%_ } _%>
@@ -29,14 +31,16 @@
     "@babel/core": "^7.24.5",
     "@babel/plugin-transform-runtime": "^7.24.3",
     "@babel/preset-env": "^7.24.5",
+    <%_ if (needsTypeScript) { _%>
     "@babel/preset-typescript": "^7.24.1",
+    <%_ } _%>
     "@babel/traverse": "^7.24.5",
     "@babel/types": "^7.24.5",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
-    <%_ if (needsEslint) { _%>
+    <%_ if (needsTypeScript && needsEslint) { _%>
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     <%_ } _%>
@@ -66,10 +70,13 @@
     "stylelint-config-standard": "^36.0.0",
     <%_ } _%>
     "terser": "^5.31.0",
+    <%_ if (needsTypeScript) { _%>
     "typescript": "^5.4.5",
-    <%_ if (needsVitest) { _%>
-    "vitest": "^1.5.3"
     <%_ } _%>
+    <%_ if (needsVitest) { _%>
+    "vitest": "^1.5.3",
+    <%_ } _%>
+    trailing-comma
   },
   "browserslist": [
     "iOS >= 10",

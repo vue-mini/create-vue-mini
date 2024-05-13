@@ -5,10 +5,10 @@
   "packageManager": "pnpm@9.1.0",
   "description": "Vue Mini 脚手架",
   "bin": {
-    "create-vue-mini": "index.js"
+    "create-vue-mini": "outfile.js"
   },
   "files": [
-    "index.js",
+    "outfile.js",
     "template"
   ],
   "engines": {
@@ -18,7 +18,7 @@
     "format": "prettier --check \"**/*.{js,cjs,ts,json,md}\"",
     "lint": "eslint --ext .js,.cjs,.ts .",
     "type": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc && mv index.js outfile.js"
   },
   "repository": "https://github.com/vue-mini/create-vue-mini.git",
   "author": "Yang Mingshan <y.mingshan3@gmail.com>",

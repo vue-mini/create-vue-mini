@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   extends: ['xo', require.resolve('xo/config/plugins.cjs'), 'prettier'],
-  ignorePatterns: ['index.js', 'template'],
+  ignorePatterns: ['outfile.js', 'template'],
   rules: {
     'unicorn/prevent-abbreviations': 'off',
   },

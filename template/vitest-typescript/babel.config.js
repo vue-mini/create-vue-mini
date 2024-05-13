@@ -39,6 +39,7 @@ const config = ({ env }) => ({
         modules: 'commonjs',
       },
     ],
+    '@babel/preset-typescript',
   ],
   plugins: [
     [
