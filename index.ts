@@ -368,7 +368,11 @@ async function init() {
   }
 
   console.log(`  ${bold(green(getCommand(packageManager, 'install')))}`)
-  console.log(`  ${bold(green(getCommand(packageManager, 'format')))}`)
+
+  if (needsPrettier) {
+    console.log(`  ${bold(green(getCommand(packageManager, 'format')))}`)
+  }
+
   console.log(`  ${bold(green(getCommand(packageManager, 'dev')))}`)
   console.log()
 }
