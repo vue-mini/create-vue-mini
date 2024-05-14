@@ -7,7 +7,7 @@ import traverse from '@babel/traverse';
 import t from '@babel/types';
 import { minify } from 'terser';
 import postcss from 'postcss';
-import postcssrc from "postcss-load-config";
+import postcssrc from 'postcss-load-config';
 import { rollup } from 'rollup';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
