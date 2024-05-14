@@ -17,7 +17,7 @@
     "type": "tsc",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
-    "test": "cross-env NODE_ENV=test vitest",
+    "test": "vitest",
     <%_ } _%>
     "dev": "cross-env NODE_ENV=development node build.js",
     "build": "cross-env NODE_ENV=production node build.js"
