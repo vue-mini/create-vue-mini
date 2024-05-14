@@ -7,7 +7,7 @@ import traverse from '@babel/traverse';
 import t from '@babel/types';
 import { minify } from 'terser';
 import postcss from 'postcss';
-import pxtorpx from 'postcss-pxtorpx-pro';
+import postcssrc from "postcss-load-config";
 import { rollup } from 'rollup';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
@@ -87,9 +87,8 @@ async function processTemplate(filePath) {
 
 async function processStyle(filePath) {
   const source = await fs.readFile(filePath, 'utf8');
-  const { css } = await postcss()
-    .use(pxtorpx({ minPixelValue: 2, transform: (x) => x }))
-    .process(source, { map: false, from: undefined });
+  const { plugins, options } = await postcssrc({ from: undefined });
+  const { css } = await postcss(plugins).process(source, options);
   const destination = filePath
     .replace('src', 'dist')
     .replace(/\.css$/, '.wxss');
