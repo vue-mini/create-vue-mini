@@ -198,56 +198,55 @@ ${getCommand(packageManager, 'dev')}
 \`\`\`sh
 ${getCommand(packageManager, 'build')}
 \`\`\`
-
 `
 
   if (needsPrettier) {
-    readme += `## 代码格式化
+    readme += `
+## 代码格式化
 
 \`\`\`sh
 ${getCommand(packageManager, 'format')}
 \`\`\`
-
 `
   }
 
   if (needsEslint) {
-    readme += `## ${needsTypeScript ? 'TS' : 'JS'} 代码质量检测
+    readme += `
+## ${needsTypeScript ? 'TS' : 'JS'} 代码质量检测
 
 \`\`\`sh
 ${getCommand(packageManager, needsStylelint ? 'lint:script' : 'lint')}
 \`\`\`
-
 `
   }
 
   if (needsStylelint) {
-    readme += `## CSS 代码质量检测
+    readme += `
+## CSS 代码质量检测
 
 \`\`\`sh
 ${getCommand(packageManager, needsEslint ? 'lint:style' : 'lint')}
 \`\`\`
-
 `
   }
 
   if (needsTypeScript) {
-    readme += `## 类型检测
+    readme += `
+## 类型检测
 
 \`\`\`sh
 ${getCommand(packageManager, 'type-check')}
 \`\`\`
-
 `
   }
 
   if (needsVitest) {
-    readme += `## 单元测试
+    readme += `
+## 单元测试
 
 \`\`\`sh
 ${getCommand(packageManager, 'test')}
 \`\`\`
-
 `
   }
 
