@@ -101,7 +101,11 @@ type Result = {
   needsPrettier?: boolean
 }
 
-function renderTemplate(src: string, dest: string, result: Result) {
+function renderTemplate(
+  src: string,
+  dest: string,
+  result: Required<Omit<Result, 'projectName' | 'shouldOverwrite'>>,
+) {
   const stats = fs.statSync(src)
 
   if (stats.isDirectory()) {
@@ -149,12 +153,6 @@ function renderTemplate(src: string, dest: string, result: Result) {
     return
   }
 
-  if (filename === 'README.md') {
-    const readme = fs.readFileSync(src, 'utf8')
-    fs.writeFileSync(dest, `# ${result.packageName}\n\n${readme}`)
-    return
-  }
-
   fs.copyFileSync(src, dest)
 }
 
@@ -166,6 +164,94 @@ function getCommand(packageManager: string, scriptName: string) {
   return packageManager === 'npm' ?
       `npm run ${scriptName}`
     : `${packageManager} ${scriptName}`
+}
+
+function generateReadme({
+  packageManager,
+  projectName,
+  needsTypeScript,
+  needsVitest,
+  needsEslint,
+  needsStylelint,
+  needsPrettier,
+}: { packageManager: string } & Required<
+  Omit<Result, 'packageName' | 'shouldOverwrite'>
+>) {
+  let readme = `# ${projectName}
+
+⚠️ 注意：将此项目导入微信小程序开发者工具时请导入项目根目录而非 \`dist\` 目录。
+
+## 依赖安装
+
+\`\`\`sh
+${getCommand(packageManager, 'install')}
+\`\`\`
+
+## 本地开发
+
+\`\`\`sh
+${getCommand(packageManager, 'dev')}
+\`\`\`
+
+## 生产构建
+
+\`\`\`sh
+${getCommand(packageManager, 'build')}
+\`\`\`
+
+`
+
+  if (needsPrettier) {
+    readme += `## 代码格式化
+
+\`\`\`sh
+${getCommand(packageManager, 'format')}
+\`\`\`
+
+`
+  }
+
+  if (needsEslint) {
+    readme += `## ${needsTypeScript ? 'TS' : 'JS'} 代码质量检测
+
+\`\`\`sh
+${getCommand(packageManager, needsStylelint ? 'lint:script' : 'lint')}
+\`\`\`
+
+`
+  }
+
+  if (needsStylelint) {
+    readme += `## CSS 代码质量检测
+
+\`\`\`sh
+${getCommand(packageManager, needsEslint ? 'lint:style' : 'lint')}
+\`\`\`
+
+`
+  }
+
+  if (needsTypeScript) {
+    readme += `## 类型检测
+
+\`\`\`sh
+${getCommand(packageManager, 'type-check')}
+\`\`\`
+
+`
+  }
+
+  if (needsVitest) {
+    readme += `## 单元测试
+
+\`\`\`sh
+${getCommand(packageManager, 'test')}
+\`\`\`
+
+`
+  }
+
+  return readme
 }
 
 // eslint-disable-next-line complexity
@@ -311,8 +397,6 @@ async function init() {
 
   const render = (templateName: string) => {
     renderTemplate(path.resolve(templateRoot, templateName), root, {
-      projectName,
-      shouldOverwrite,
       packageName,
       needsTypeScript,
       needsVitest,
@@ -358,6 +442,19 @@ async function init() {
     userAgent.includes('pnpm') ? 'pnpm'
     : userAgent.includes('yarn') ? 'yarn'
     : 'npm'
+
+  fs.writeFileSync(
+    path.resolve(root, 'README.md'),
+    generateReadme({
+      packageManager,
+      projectName: projectName ?? packageName ?? defaultProjectName,
+      needsTypeScript,
+      needsVitest,
+      needsEslint,
+      needsStylelint,
+      needsPrettier,
+    }),
+  )
 
   console.log(`\n项目初始化完成，可执行以下命令：\n`)
   if (root !== cwd) {
