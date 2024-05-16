@@ -14,7 +14,7 @@
     "lint<% if (needsEslint) { %>:style<% } %>": "stylelint \"src/**/*.css\"",
     <%_ } _%>
     <%_ if (needsTypeScript) { _%>
-    "type": "tsc",
+    "type-check": "tsc",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
     "test": "vitest",
