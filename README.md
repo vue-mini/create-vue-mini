@@ -18,6 +18,8 @@ npm create vue-mini@latest
 > [!NOTE]
 > `@latest` **不能**省略，否则 `npm` 可能会使用已缓存的旧版本。
 
+如果你能接受更加自以为是的配置，也可以看看 [create-mini](https://github.com/yangmingshan/create-mini)。
+
 ## 致谢
 
 此项目由 [create-vue](https://github.com/vuejs/create-vue) 修改而来。
