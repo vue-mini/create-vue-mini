@@ -14,8 +14,8 @@
 npm create vue-mini@latest
 ```
 
+<!-- prettier-ignore -->
 > [!NOTE]
-
 > `@latest` **不能**省略, 否则 `npm` 可能会使用已缓存的旧版本.
 
 ## 致谢
