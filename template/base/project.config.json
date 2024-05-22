@@ -45,7 +45,7 @@
     "ignoreUploadUnusedFiles": true
   },
   "compileType": "miniprogram",
-  "libVersion": "3.3.4",
+  "libVersion": "development",
   "appid": "",
   "projectname": "vue-mini-project",
   "simulatorType": "wechat",
