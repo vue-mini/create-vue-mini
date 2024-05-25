@@ -11,13 +11,13 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "text": "Home",
+        "text": "主页",
         "pagePath": "pages/home/index",
         "iconPath": "/images/home.png",
         "selectedIconPath": "/images/home-selected.png"
       },
       {
-        "text": "Mine",
+        "text": "我",
         "pagePath": "pages/mine/index",
         "iconPath": "/images/mine.png",
         "selectedIconPath": "/images/mine-selected.png"

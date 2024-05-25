@@ -1,7 +1,7 @@
 import { defineComponent, ref } from '@vue-mini/core';
 
 defineComponent(() => {
-  const greeting = ref('Welcome to Vue Mini');
+  const greeting = ref('欢迎使用 Vue Mini');
 
   return {
     greeting,
