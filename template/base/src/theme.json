@@ -3,18 +3,18 @@
     "style": "black",
     "color": "#181818",
     "bgColor": "#ffffff",
-    "homeIcon": "/assets/home-light.png",
-    "homeSelectedIcon": "/assets/home-light-selected.png",
-    "mineIcon": "/assets/mine-light.png",
-    "mineSelectedIcon": "/assets/mine-light-selected.png"
+    "homeIcon": "/images/home-light.png",
+    "homeSelectedIcon": "/images/home-light-selected.png",
+    "mineIcon": "/images/mine-light.png",
+    "mineSelectedIcon": "/images/mine-light-selected.png"
   },
   "dark": {
     "style": "white",
     "color": "#ffffff",
     "bgColor": "#181818",
-    "homeIcon": "/assets/home-dark.png",
-    "homeSelectedIcon": "/assets/home-dark-selected.png",
-    "mineIcon": "/assets/mine-dark.png",
-    "mineSelectedIcon": "/assets/mine-dark-selected.png"
+    "homeIcon": "/images/home-dark.png",
+    "homeSelectedIcon": "/images/home-dark-selected.png",
+    "mineIcon": "/images/mine-dark.png",
+    "mineSelectedIcon": "/images/mine-dark-selected.png"
   }
 }
