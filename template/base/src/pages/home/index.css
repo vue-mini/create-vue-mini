@@ -13,3 +13,9 @@
   font-size: 64px;
   font-weight: bold;
 }
+
+@media (prefers-color-scheme: dark) {
+  .greeting {
+    color: #fff;
+  }
+}

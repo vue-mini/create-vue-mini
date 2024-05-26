@@ -1,0 +1,20 @@
+{
+  "light": {
+    "style": "black",
+    "color": "#181818",
+    "bgColor": "#ffffff",
+    "homeIcon": "/assets/home-light.png",
+    "homeSelectedIcon": "/assets/home-light-selected.png",
+    "mineIcon": "/assets/mine-light.png",
+    "mineSelectedIcon": "/assets/mine-light-selected.png"
+  },
+  "dark": {
+    "style": "white",
+    "color": "#ffffff",
+    "bgColor": "#181818",
+    "homeIcon": "/assets/home-dark.png",
+    "homeSelectedIcon": "/assets/home-dark-selected.png",
+    "mineIcon": "/assets/mine-dark.png",
+    "mineSelectedIcon": "/assets/mine-dark-selected.png"
+  }
+}
