@@ -48,8 +48,6 @@ const config = {
         version: runtimeVersion,
       },
     ],
-    '@babel/plugin-transform-regenerator',
-    '@babel/plugin-transform-destructuring',
     'transform-inline-environment-variables',
     [
       'module-resolver',
