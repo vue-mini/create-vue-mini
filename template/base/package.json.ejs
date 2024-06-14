@@ -23,26 +23,26 @@
     "build": "cross-env NODE_ENV=production node build.js"
   },
   "dependencies": {
-    "@babel/runtime": "^7.24.5",
+    "@babel/runtime": "^7.24.7",
     "@vue-mini/core": "1.0.0-rc.11",
     "promise-polyfill": "^8.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.5",
-    "@babel/plugin-transform-runtime": "^7.24.3",
-    "@babel/preset-env": "^7.24.5",
+    "@babel/core": "^7.24.7",
+    "@babel/plugin-transform-runtime": "^7.24.7",
+    "@babel/preset-env": "^7.24.7",
     <%_ if (needsTypeScript) { _%>
-    "@babel/preset-typescript": "^7.24.1",
+    "@babel/preset-typescript": "^7.24.7",
     <%_ } _%>
-    "@babel/traverse": "^7.24.5",
-    "@babel/types": "^7.24.5",
-    "@rollup/plugin-commonjs": "^25.0.7",
+    "@babel/traverse": "^7.24.7",
+    "@babel/types": "^7.24.7",
+    "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
     <%_ if (needsTypeScript && needsEslint) { _%>
-    "@typescript-eslint/eslint-plugin": "^7.9.0",
-    "@typescript-eslint/parser": "^7.9.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
     "@vitest/coverage-v8": "^1.6.0",
@@ -60,17 +60,17 @@
     <%_ } _%>
     "fs-extra": "^11.2.0",
     "postcss": "^8.4.38",
-    "postcss-load-config": "^5.1.0",
+    "postcss-load-config": "^6.0.1",
     "postcss-pxtorpx-pro": "^2.0.0",
     <%_ if (needsPrettier) { _%>
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.2",
     <%_ } _%>
-    "rollup": "^4.17.2",
+    "rollup": "^4.18.0",
     <%_ if (needsStylelint) { _%>
-    "stylelint": "^16.5.0",
+    "stylelint": "^16.6.1",
     "stylelint-config-standard": "^36.0.0",
     <%_ } _%>
-    "terser": "^5.31.0",
+    "terser": "^5.31.1",
     <%_ if (needsTypeScript) { _%>
     "typescript": "^5.4.5",
     <%_ } _%>
