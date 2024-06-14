@@ -104,7 +104,9 @@ type Result = {
 function renderTemplate(
   src: string,
   dest: string,
-  result: Required<Omit<Result, 'projectName' | 'shouldOverwrite'>>,
+  result: Required<Omit<Result, 'projectName' | 'shouldOverwrite'>> & {
+    packageManager: string
+  },
 ) {
   const stats = fs.statSync(src)
 
@@ -396,6 +398,14 @@ async function init() {
 
   const templateRoot = new URL('template', import.meta.url).pathname
 
+  // Instructions:
+  // Supported package managers: pnpm > yarn > npm
+  const userAgent = process.env.npm_config_user_agent ?? ''
+  const packageManager =
+    userAgent.includes('pnpm') ? 'pnpm'
+    : userAgent.includes('yarn') ? 'yarn'
+    : 'npm'
+
   const render = (templateName: string) => {
     renderTemplate(path.resolve(templateRoot, templateName), root, {
       packageName,
@@ -404,6 +414,10 @@ async function init() {
       needsEslint,
       needsStylelint,
       needsPrettier,
+      packageManager:
+        packageManager === 'npm' ? '' : (
+          userAgent.split(' ')[0].replace('/', '@')
+        ),
     })
   }
 
@@ -435,14 +449,6 @@ async function init() {
       render('vitest')
     }
   }
-
-  // Instructions:
-  // Supported package managers: pnpm > yarn > npm
-  const userAgent = process.env.npm_config_user_agent ?? ''
-  const packageManager =
-    userAgent.includes('pnpm') ? 'pnpm'
-    : userAgent.includes('yarn') ? 'yarn'
-    : 'npm'
 
   fs.writeFileSync(
     path.resolve(root, 'README.md'),

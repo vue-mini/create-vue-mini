@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  <%_ if (packageManager) { _%>
+  "packageManager": "<%- packageManager %>",
+  <%_ } _%>
   "scripts": {
     <%_ if (needsPrettier) { _%>
     "format": "prettier --write \"**/*.{js<% if (needsEslint) { %>,cjs<% } %><% if (needsTypeScript) { %>,ts<% } %>,json,css,html,md}\"",
