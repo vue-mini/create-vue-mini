@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.24.7",
-    "@vue-mini/core": "1.0.0-rc.11",
+    "@vue-mini/core": "1.0.0-rc.14",
     "promise-polyfill": "^8.3.0"
   },
   "devDependencies": {
@@ -44,8 +44,8 @@
     "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
     <%_ if (needsTypeScript && needsEslint) { _%>
-    "@typescript-eslint/eslint-plugin": "^7.13.0",
-    "@typescript-eslint/parser": "^7.13.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
     "@vitest/coverage-v8": "^1.6.0",
@@ -71,11 +71,11 @@
     "rollup": "^4.18.0",
     <%_ if (needsStylelint) { _%>
     "stylelint": "^16.6.1",
-    "stylelint-config-standard": "^36.0.0",
+    "stylelint-config-standard": "^36.0.1",
     <%_ } _%>
     "terser": "^5.31.1",
     <%_ if (needsTypeScript) { _%>
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
     "vitest": "^1.6.0",
