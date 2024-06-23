@@ -30,10 +30,10 @@
   },
   "devDependencies": {
     "@types/ejs": "^3.1.5",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.8",
     "@types/prompts": "^2.4.9",
     "prettier": "^3.3.2",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "xo": "^0.58.0"
   }
 }
