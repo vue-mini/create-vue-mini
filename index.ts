@@ -3,6 +3,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 import ejs from 'ejs'
 import prompts from 'prompts'
 import { red, green, bold } from 'kolorist'
@@ -396,7 +397,7 @@ async function init() {
 
   console.log(`\n正在初始化项目 ${root}...`)
 
-  const templateRoot = new URL('template', import.meta.url).pathname
+  const templateRoot = fileURLToPath(new URL('template', import.meta.url))
 
   // Instructions:
   // Supported package managers: pnpm > yarn > npm
