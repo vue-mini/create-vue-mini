@@ -43,6 +43,9 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
+    <%_ if (needsTypeScript && needsVitest) { _%>
+    "@types/node": "^20.14.9",
+    <%_ } _%>
     <%_ if (needsTypeScript && needsEslint) { _%>
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
