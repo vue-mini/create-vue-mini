@@ -50,9 +50,21 @@ async function bundleModule(module) {
 }
 
 async function processScript(filePath) {
-  let { ast, code } = await babel.transformFileAsync(path.resolve(filePath), {
-    ast: true,
-  });
+  let ast, code;
+  try {
+    const result = await babel.transformFileAsync(path.resolve(filePath), {
+      ast: true,
+    });
+    ast = result.ast;
+    code = result.code;
+  } catch (error) {
+    console.error(`Failed to compile ${filePath}`);
+
+    if (__PROD__) throw error;
+
+    console.error(error);
+    return;
+  }
 
   if (filePath.endsWith('app.js')) {
     /**
@@ -103,7 +115,20 @@ async function processTemplate(filePath) {
 async function processStyle(filePath) {
   const source = await fs.readFile(filePath, 'utf8');
   const { plugins, options } = await postcssrc({ from: undefined });
-  const { css } = await postcss(plugins).process(source, options);
+
+  let css;
+  try {
+    const result = await postcss(plugins).process(source, options);
+    css = result.css;
+  } catch (error) {
+    console.error(`Failed to compile ${filePath}`);
+
+    if (__PROD__) throw error;
+
+    console.error(error);
+    return;
+  }
+
   const destination = filePath
     .replace('src', 'dist')
     .replace(/\.css$/, '.wxss');
