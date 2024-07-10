@@ -6,6 +6,9 @@
   <%_ if (packageManager) { _%>
   "packageManager": "<%- packageManager %>",
   <%_ } _%>
+  "engines": {
+    "node": ">=v18.19.1 <19 || >=20.6.1"
+  },
   "scripts": {
     <%_ if (needsPrettier) { _%>
     "format": "prettier --write \"**/*.{js<% if (needsEslint) { %>,cjs<% } %><% if (needsTypeScript) { %>,ts<% } %>,json,css,html,md}\"",

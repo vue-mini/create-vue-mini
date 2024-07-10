@@ -12,7 +12,7 @@
     "template"
   ],
   "engines": {
-    "node": ">=v18.19.1"
+    "node": ">=v18.19.1 <19 || >=20.6.1"
   },
   "scripts": {
     "format": "prettier --check \"**/*.{js,cjs,ts,json,md}\"",
