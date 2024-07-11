@@ -150,7 +150,7 @@ async function dev() {
       return;
     }
 
-    if (/\.css$/.test(filePath)) {
+    if (/\.css|.less|.scss$/.test(filePath)) {
       processStyle(filePath);
       return;
     }
@@ -186,7 +186,7 @@ async function prod() {
       return;
     }
 
-    if (/\.css$/.test(filePath)) {
+    if (/\.css|.less|.scss$/.test(filePath)) {
       processStyle(filePath);
       return;
     }
