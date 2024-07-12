@@ -13,6 +13,7 @@ import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import { parse as templateParse } from 'vue/compiler-sfc';
 
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const __PROD__ = NODE_ENV === 'production';
@@ -22,6 +23,17 @@ const terserOptions = {
   safari10: true,
   format: { comments: false },
 };
+
+/**
+ * Ensure the file exists by creating the directory if it doesn't exist.
+ * @param {string} filePath
+ */
+async function ensureFileExists(filePath) {
+  const isFileExists = await fs.exists(filePath);
+  if (!isFileExists) {
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+  }
+}
 
 const bundledModules = new Set();
 async function bundleModule(module) {
@@ -49,12 +61,26 @@ async function bundleModule(module) {
   });
 }
 
-async function processScript(filePath) {
+/**
+ * Process the script file.
+ * If the script is not provided, the file will be read from the file system.
+ * @param {string} filePath
+ * @param {string | undefined} script
+ */
+async function processScript(filePath, script) {
   let ast, code;
   try {
-    const result = await babel.transformFileAsync(path.resolve(filePath), {
-      ast: true,
-    });
+    let result;
+    if (script) {
+      result = await babel.transformAsync(script, {
+        ast: true,
+        filename: path.resolve(filePath),
+      });
+    } else {
+      result = await babel.transformFileAsync(path.resolve(filePath), {
+        ast: true,
+      });
+    }
     ast = result.ast;
     code = result.code;
   } catch (error) {
@@ -101,19 +127,41 @@ async function processScript(filePath) {
 
   const destination = filePath.replace('src', 'dist').replace(/\.ts$/, '.js');
   // Make sure the directory already exists when write file
-  await fs.copy(filePath, destination);
+  await ensureFileExists(destination);
   fs.writeFile(destination, code);
 }
 
-async function processTemplate(filePath) {
-  const destination = filePath
-    .replace('src', 'dist')
-    .replace(/\.html$/, '.wxml');
-  await fs.copy(filePath, destination);
+/**
+ * Process the template file.
+ * If the template is not provided, the file will be read from the file system.
+ * @param {string} filePath
+ * @param {string} template
+ */
+async function processTemplate(filePath, template) {
+  if (template) {
+    await ensureFileExists(filePath);
+    await fs.writeFile(filePath, template);
+  } else {
+    const destination = filePath
+      .replace('src', 'dist')
+      .replace(/\.html$/, '.wxml');
+    await fs.copy(filePath, destination);
+  }
 }
 
-async function processStyle(filePath) {
-  const source = await fs.readFile(filePath, 'utf8');
+/**
+ * Process the style file.
+ * If the style is not provided, the file will be read from the file system.
+ * @param {string} filePath
+ * @param {string} style
+ */
+async function processStyle(filePath, style) {
+  let source;
+  if (style) {
+    source = style;
+  } else {
+    source = await fs.readFile(filePath, 'utf8');
+  }
   const { plugins, options } = await postcssrc({ from: undefined });
 
   let css;
@@ -132,14 +180,49 @@ async function processStyle(filePath) {
   const destination = filePath
     .replace('src', 'dist')
     .replace(/\.css$/, '.wxss');
-  // Make sure the directory already exists when write file
-  await fs.copy(filePath, destination);
+  ensureFileExists(destination);
   fs.writeFile(destination, css);
+}
+
+/**
+ * Process the Single File Component (SFC) file.
+ * The file will be read from the file system.
+ * The script, template, and style will be extracted from the SFC file.
+ * now do not support scoped style
+ * and only support one style block
+ * @param {string} filePath
+ */
+function processSFC(filePath) {
+  const source = fs.readFileSync(filePath, 'utf8');
+  const parsedSrc = templateParse(source);
+  const script = parsedSrc.descriptor.script.content;
+  const scriptLang = parsedSrc.descriptor.script.lang;
+  const template = parsedSrc.descriptor.template.content;
+  const style = parsedSrc.descriptor.styles[0];
+
+  const virtualScriptPath = filePath
+    .replace('src', 'dist')
+    .replace(/\.vue$/, `.${scriptLang}`);
+  const virtualTemplatePath = filePath
+    .replace('src', 'dist')
+    .replace(/\.vue$/, '.wxml');
+  const virtualStylePaths = filePath
+    .replace('src', 'dist')
+    .replace(/\.vue$/, '.css');
+
+  processScript(virtualScriptPath, script);
+  processTemplate(virtualTemplatePath, template);
+  processStyle(virtualStylePaths, style.content);
 }
 
 async function dev() {
   await fs.remove('dist');
   const cb = (filePath) => {
+    if (/\.vue$/.test(filePath)) {
+      processSFC(filePath);
+      return;
+    }
+
     if (/\.ts$/.test(filePath)) {
       processScript(filePath);
       return;
@@ -176,6 +259,11 @@ async function prod() {
     ignored: ['**/.{gitkeep,DS_Store}'],
   });
   watcher.on('add', (filePath) => {
+    if (/\.vue$/.test(filePath)) {
+      processSFC(filePath);
+      return;
+    }
+
     if (/\.ts$/.test(filePath)) {
       processScript(filePath);
       return;
