@@ -82,7 +82,7 @@ async function processScript(filePath) {
       '"use strict";\n\nvar PromisePolyfill = require("promise-polyfill");\nPromise = PromisePolyfill.default;',
     );
     const promise = bundleModule('promise-polyfill');
-    waitList.push(promise);
+    waitList?.push(promise);
   }
 
   traverse.default(ast, {
@@ -96,7 +96,7 @@ async function processScript(filePath) {
       }
 
       const promise = bundleModule(node.arguments[0].value);
-      waitList.push(promise);
+      waitList?.push(promise);
     },
   });
 
@@ -169,7 +169,7 @@ async function dev() {
     })
     .on('add', (filePath) => {
       const promise = cb(filePath);
-      waitList.push(promise);
+      waitList?.push(promise);
     })
     .on('change', (filePath) => {
       cb(filePath);
