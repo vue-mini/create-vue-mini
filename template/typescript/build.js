@@ -13,7 +13,10 @@ import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import { green, bold } from 'kolorist';
 
+let waitList = [];
+const startTime = Date.now();
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const __PROD__ = NODE_ENV === 'production';
 const terserOptions = {
@@ -42,7 +45,7 @@ async function bundleModule(module) {
       __PROD__ && terser(terserOptions),
     ].filter(Boolean),
   });
-  bundle.write({
+  await bundle.write({
     exports: 'named',
     file: `dist/miniprogram_npm/${module}/index.js`,
     format: 'cjs',
@@ -78,7 +81,8 @@ async function processScript(filePath) {
       '"use strict";',
       '"use strict";\n\nvar PromisePolyfill = require("promise-polyfill");\nPromise = PromisePolyfill.default;',
     );
-    bundleModule('promise-polyfill');
+    const promise = bundleModule('promise-polyfill');
+    waitList.push(promise);
   }
 
   traverse.default(ast, {
@@ -91,7 +95,8 @@ async function processScript(filePath) {
         return;
       }
 
-      bundleModule(node.arguments[0].value);
+      const promise = bundleModule(node.arguments[0].value);
+      waitList.push(promise);
     },
   });
 
@@ -102,7 +107,7 @@ async function processScript(filePath) {
   const destination = filePath.replace('src', 'dist').replace(/\.ts$/, '.js');
   // Make sure the directory already exists when write file
   await fs.copy(filePath, destination);
-  fs.writeFile(destination, code);
+  await fs.writeFile(destination, code);
 }
 
 async function processTemplate(filePath) {
@@ -134,39 +139,47 @@ async function processStyle(filePath) {
     .replace(/\.css$/, '.wxss');
   // Make sure the directory already exists when write file
   await fs.copy(filePath, destination);
-  fs.writeFile(destination, css);
+  await fs.writeFile(destination, css);
 }
+
+const cb = async (filePath) => {
+  if (/\.ts$/.test(filePath)) {
+    await processScript(filePath);
+    return;
+  }
+
+  if (/\.html$/.test(filePath)) {
+    await processTemplate(filePath);
+    return;
+  }
+
+  if (/\.css$/.test(filePath)) {
+    await processStyle(filePath);
+    return;
+  }
+
+  await fs.copy(filePath, filePath.replace('src', 'dist'));
+};
 
 async function dev() {
   await fs.remove('dist');
-  const cb = (filePath) => {
-    if (/\.ts$/.test(filePath)) {
-      processScript(filePath);
-      return;
-    }
-
-    if (/\.html$/.test(filePath)) {
-      processTemplate(filePath);
-      return;
-    }
-
-    if (/\.css$/.test(filePath)) {
-      processStyle(filePath);
-      return;
-    }
-
-    fs.copy(filePath, filePath.replace('src', 'dist'));
-  };
-
   chokidar
     .watch(['src'], {
       ignored: ['**/.{gitkeep,DS_Store}'],
     })
     .on('add', (filePath) => {
-      cb(filePath);
+      const promise = cb(filePath);
+      waitList.push(promise);
     })
     .on('change', (filePath) => {
       cb(filePath);
+    })
+    .on('ready', async () => {
+      await Promise.all(waitList);
+      console.log(bold(green(`启动完成，耗时：${Date.now() - startTime}ms`)));
+      console.log(bold(green('监听文件变化中...')));
+      // Release memory.
+      waitList = null;
     });
 }
 
@@ -176,24 +189,15 @@ async function prod() {
     ignored: ['**/.{gitkeep,DS_Store}'],
   });
   watcher.on('add', (filePath) => {
-    if (/\.ts$/.test(filePath)) {
-      processScript(filePath);
-      return;
-    }
-
-    if (/\.html$/.test(filePath)) {
-      processTemplate(filePath);
-      return;
-    }
-
-    if (/\.css$/.test(filePath)) {
-      processStyle(filePath);
-      return;
-    }
-
-    fs.copy(filePath, filePath.replace('src', 'dist'));
+    const promise = cb(filePath);
+    waitList.push(promise);
   });
-  watcher.on('ready', () => watcher.close());
+  watcher.on('ready', async () => {
+    const promise = watcher.close();
+    waitList.push(promise);
+    await Promise.all(waitList);
+    console.log(bold(green(`构建完成，耗时：${Date.now() - startTime}ms`)));
+  });
 }
 
 if (__PROD__) {
