@@ -1,17 +1,33 @@
 {
   "light": {
-    "style": "black",
-    "color": "#181818",
+    "navBgColor": "#f6f6f6",
+    "navTxtStyle": "black",
     "bgColor": "#ffffff",
+    "bgTxtStyle": "light",
+    "bgColorTop": "#eeeeee",
+    "bgColorBottom": "#efefef",
+    "tabFontColor": "#000000",
+    "tabSelectedColor": "#3cc51f",
+    "tabBgColor": "#ffffff",
+    "tabBorderStyle": "black",
+    
     "homeIcon": "/images/home-light.png",
     "homeSelectedIcon": "/images/home-light-selected.png",
     "mineIcon": "/images/mine-light.png",
     "mineSelectedIcon": "/images/mine-light-selected.png"
   },
   "dark": {
-    "style": "white",
-    "color": "#ffffff",
-    "bgColor": "#181818",
+    "navBgColor": "#191919",
+    "navTxtStyle": "white",
+    "bgColor": "#1f1f1f",
+    "bgTxtStyle": "dark",
+    "bgColorTop": "#191919",
+    "bgColorBottom": "#1f1f1f",
+    "tabFontColor": "#ffffff",
+    "tabSelectedColor": "#51a937",
+    "tabBgColor": "#191919",
+    "tabBorderStyle": "white",
+
     "homeIcon": "/images/home-dark.png",
     "homeSelectedIcon": "/images/home-dark-selected.png",
     "mineIcon": "/images/mine-dark.png",

@@ -3,18 +3,19 @@
   "themeLocation": "theme.json",
   "pages": ["pages/home/index", "pages/mine/index"],
   "window": {
-    "navigationBarBackgroundColor": "@bgColor",
-    "navigationBarTextStyle": "@style",
+    "navigationBarBackgroundColor": "@navBgColor",
+    "navigationBarTextStyle": "@navTxtStyle",
     "navigationBarTitleText": "vue-mini-project",
     "backgroundColor": "@bgColor",
-    "backgroundColorTop": "@bgColor",
-    "backgroundColorBottom": "@bgColor"
+    "backgroundTextStyle": "@bgTxtStyle",
+    "backgroundColorTop": "@bgColorTop",
+    "backgroundColorBottom": "@bgColorBottom"
   },
   "tabBar": {
-    "color": "@color",
-    "selectedColor": "@color",
-    "backgroundColor": "@bgColor",
-    "borderStyle": "@style",
+    "color": "@tabFontColor",
+    "selectedColor": "@tabSelectedColor",
+    "backgroundColor": "@tabBgColor",
+    "borderStyle": "@tabBorderStyle",
     "list": [
       {
         "text": "主页",
