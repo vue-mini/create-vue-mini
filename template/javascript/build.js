@@ -16,7 +16,8 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { green, bold } from 'kolorist';
 
-let waitList = [];
+let topLevelJobs = [];
+let bundleJobs = [];
 const startTime = Date.now();
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const __PROD__ = NODE_ENV === 'production';
@@ -66,7 +67,7 @@ function traverseAST(ast, onlyBabel = false) {
       }
 
       const promise = bundleModule(node.arguments[0].value);
-      waitList?.push(promise);
+      bundleJobs?.push(promise);
     },
   });
 }
@@ -130,7 +131,7 @@ async function scanDependencies() {
   const { dependencies } = await fs.readJson('package.json', 'utf8');
   for (const name of Object.keys(dependencies)) {
     const promise = buildComponentLibrary(name);
-    waitList.push(promise);
+    topLevelJobs.push(promise);
   }
 }
 
@@ -164,7 +165,7 @@ async function processScript(filePath) {
       '"use strict";\n\nvar PromisePolyfill = require("promise-polyfill");\nPromise = PromisePolyfill.default;',
     );
     const promise = bundleModule('promise-polyfill');
-    waitList?.push(promise);
+    bundleJobs?.push(promise);
   }
 
   traverseAST(ast);
@@ -239,17 +240,19 @@ async function dev() {
     })
     .on('add', (filePath) => {
       const promise = cb(filePath);
-      waitList?.push(promise);
+      topLevelJobs?.push(promise);
     })
     .on('change', (filePath) => {
       cb(filePath);
     })
     .on('ready', async () => {
-      await Promise.all(waitList);
+      await Promise.all(topLevelJobs);
+      await Promise.all(bundleJobs);
       console.log(bold(green(`启动完成，耗时：${Date.now() - startTime}ms`)));
       console.log(bold(green('监听文件变化中...')));
       // Release memory.
-      waitList = null;
+      topLevelJobs = null;
+      bundleJobs = null;
     });
 }
 
@@ -261,12 +264,13 @@ async function prod() {
   });
   watcher.on('add', (filePath) => {
     const promise = cb(filePath);
-    waitList.push(promise);
+    topLevelJobs.push(promise);
   });
   watcher.on('ready', async () => {
     const promise = watcher.close();
-    waitList.push(promise);
-    await Promise.all(waitList);
+    topLevelJobs.push(promise);
+    await Promise.all(topLevelJobs);
+    await Promise.all(bundleJobs);
     console.log(bold(green(`构建完成，耗时：${Date.now() - startTime}ms`)));
   });
 }
