@@ -1,5 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import fs from 'fs-extra';
 import chokidar from 'chokidar';
 import babel from '@babel/core';
@@ -26,6 +27,68 @@ const terserOptions = {
   format: { comments: false },
 };
 
+async function buildComponentLibrary(name) {
+  const pkgPath = fileURLToPath(
+    new URL(import.meta.resolve(`${name}/package.json`)),
+  );
+  const modulePath = path.dirname(pkgPath);
+  const { miniprogram } = await fs.readJson(pkgPath, 'utf8');
+
+  let source = '';
+  if (miniprogram) {
+    source = path.join(modulePath, miniprogram);
+  } else {
+    try {
+      const dist = path.join(modulePath, 'miniprogram_dist');
+      const stats = await fs.stat(dist);
+      if (stats.isDirectory()) {
+        source = dist;
+      }
+    } catch {
+      // Empty
+    }
+  }
+
+  if (!source) return;
+
+  const destination = path.resolve('dist', 'miniprogram_npm', name);
+  await fs.copy(source, destination);
+
+  if (__PROD__) {
+    return new Promise((resolve) => {
+      const jobs = [];
+      const compress = async (filePath) => {
+        let code = await fs.readFile(filePath, 'utf8');
+        code = (await minify(code, terserOptions)).code;
+        await fs.writeFile(filePath, code);
+      };
+
+      const watcher = chokidar.watch([destination], {
+        ignored: ['**/.{gitkeep,DS_Store}'],
+      });
+      watcher.on('add', (filePath) => {
+        if (!/\.js$/.test(filePath)) return;
+        const promise = compress(filePath);
+        jobs.push(promise);
+      });
+      watcher.on('ready', async () => {
+        const promise = watcher.close();
+        jobs.push(promise);
+        await Promise.all(jobs);
+        resolve();
+      });
+    });
+  }
+}
+
+async function scanDependencies() {
+  const { dependencies } = await fs.readJson('package.json', 'utf8');
+  for (const name of Object.keys(dependencies)) {
+    const promise = buildComponentLibrary(name);
+    waitList.push(promise);
+  }
+}
+
 const bundledModules = new Set();
 async function bundleModule(module) {
   if (bundledModules.has(module)) return;
@@ -51,37 +114,6 @@ async function bundleModule(module) {
     format: 'cjs',
   });
 }
-
-async function addMiniProgramNpm() {
-  const projectPackageJson = await fs.readJSON('package.json');
-  const modules = Object.assign(projectPackageJson.dependencies, projectPackageJson.devDependencies)
-  Object.keys(modules).forEach(async (moduleName) => {
-    // 检查模块是否已打包
-    if (bundledModules.has(moduleName)) return;
-    bundledModules.add(moduleName);
-    try {
-      // 验证模块是否存在
-      const moduleDir = path.resolve(`node_modules/${moduleName}`);
-      if (!(await fs.pathExists(moduleDir))) {
-        console.error(`Module ${moduleName} does not exist.`);
-        return;
-      }
-
-      // 读取并解析 package.json
-      const modulePackageJson = await fs.readJSON(path.resolve(`node_modules/${moduleName}/package.json`));
-      // 判断是否是小程序组件npm包 [发布小程序 npm 包的约束](https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html)
-      if (modulePackageJson.miniprogram !== undefined) {
-        const modulesPath = path.resolve(`node_modules/${moduleName}/${modulePackageJson.miniprogram}`);
-        // 复制文件
-        await fs.copy(modulesPath, `dist/miniprogram_npm/${moduleName}/`);
-      }
-    } catch (error) {
-      console.error(`An error occurred while processing module ${moduleName}:`, error);
-    }
-  })
-
-}
-
 
 async function processScript(filePath) {
   let ast, code;
@@ -194,6 +226,7 @@ const cb = async (filePath) => {
 
 async function dev() {
   await fs.remove('dist');
+  await scanDependencies();
   chokidar
     .watch(['src'], {
       ignored: ['**/.{gitkeep,DS_Store}'],
@@ -207,7 +240,6 @@ async function dev() {
     })
     .on('ready', async () => {
       await Promise.all(waitList);
-      await addMiniProgramNpm();
       console.log(bold(green(`启动完成，耗时：${Date.now() - startTime}ms`)));
       console.log(bold(green('监听文件变化中...')));
       // Release memory.
@@ -217,6 +249,7 @@ async function dev() {
 
 async function prod() {
   await fs.remove('dist');
+  await scanDependencies();
   const watcher = chokidar.watch(['src'], {
     ignored: ['**/.{gitkeep,DS_Store}'],
   });
@@ -228,7 +261,6 @@ async function prod() {
     const promise = watcher.close();
     waitList.push(promise);
     await Promise.all(waitList);
-    await addMiniProgramNpm();
     console.log(bold(green(`构建完成，耗时：${Date.now() - startTime}ms`)));
   });
 }
