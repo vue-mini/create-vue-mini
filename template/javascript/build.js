@@ -1,5 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import fs from 'fs-extra';
 import chokidar from 'chokidar';
 import babel from '@babel/core';
@@ -25,6 +26,68 @@ const terserOptions = {
   safari10: true,
   format: { comments: false },
 };
+
+async function buildComponentLibrary(name) {
+  const pkgPath = fileURLToPath(
+    new URL(import.meta.resolve(`${name}/package.json`)),
+  );
+  const modulePath = path.dirname(pkgPath);
+  const { miniprogram } = await fs.readJson(pkgPath, 'utf8');
+
+  let source = '';
+  if (miniprogram) {
+    source = path.join(modulePath, miniprogram);
+  } else {
+    try {
+      const dist = path.join(modulePath, 'miniprogram_dist');
+      const stats = await fs.stat(dist);
+      if (stats.isDirectory()) {
+        source = dist;
+      }
+    } catch {
+      // Empty
+    }
+  }
+
+  if (!source) return;
+
+  const destination = path.resolve('dist', 'miniprogram_npm', name);
+  await fs.copy(source, destination);
+
+  if (__PROD__) {
+    return new Promise((resolve) => {
+      const jobs = [];
+      const compress = async (filePath) => {
+        let code = await fs.readFile(filePath, 'utf8');
+        code = (await minify(code, terserOptions)).code;
+        await fs.writeFile(filePath, code);
+      };
+
+      const watcher = chokidar.watch([destination], {
+        ignored: ['**/.{gitkeep,DS_Store}'],
+      });
+      watcher.on('add', (filePath) => {
+        if (!/\.js$/.test(filePath)) return;
+        const promise = compress(filePath);
+        jobs.push(promise);
+      });
+      watcher.on('ready', async () => {
+        const promise = watcher.close();
+        jobs.push(promise);
+        await Promise.all(jobs);
+        resolve();
+      });
+    });
+  }
+}
+
+async function scanDependencies() {
+  const { dependencies } = await fs.readJson('package.json', 'utf8');
+  for (const name of Object.keys(dependencies)) {
+    const promise = buildComponentLibrary(name);
+    waitList.push(promise);
+  }
+}
 
 const bundledModules = new Set();
 async function bundleModule(module) {
@@ -163,6 +226,7 @@ const cb = async (filePath) => {
 
 async function dev() {
   await fs.remove('dist');
+  await scanDependencies();
   chokidar
     .watch(['src'], {
       ignored: ['**/.{gitkeep,DS_Store}'],
@@ -185,6 +249,7 @@ async function dev() {
 
 async function prod() {
   await fs.remove('dist');
+  await scanDependencies();
   const watcher = chokidar.watch(['src'], {
     ignored: ['**/.{gitkeep,DS_Store}'],
   });
