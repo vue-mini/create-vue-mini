@@ -52,6 +52,37 @@ async function bundleModule(module) {
   });
 }
 
+async function addMiniProgramNpm() {
+  const projectPackageJson = await fs.readJSON('package.json');
+  const modules = Object.assign(projectPackageJson.dependencies, projectPackageJson.devDependencies)
+  Object.keys(modules).forEach(async (moduleName) => {
+    // 检查模块是否已打包
+    if (bundledModules.has(moduleName)) return;
+    bundledModules.add(moduleName);
+    try {
+      // 验证模块是否存在
+      const moduleDir = path.resolve(`node_modules/${moduleName}`);
+      if (!(await fs.pathExists(moduleDir))) {
+        console.error(`Module ${moduleName} does not exist.`);
+        return;
+      }
+
+      // 读取并解析 package.json
+      const modulePackageJson = await fs.readJSON(path.resolve(`node_modules/${moduleName}/package.json`));
+      // 判断是否是小程序组件npm包 [发布小程序 npm 包的约束](https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html)
+      if (modulePackageJson.miniprogram !== undefined) {
+        const modulesPath = path.resolve(`node_modules/${moduleName}/${modulePackageJson.miniprogram}`);
+        // 复制文件
+        await fs.copy(modulesPath, `dist/miniprogram_npm/${moduleName}/`);
+      }
+    } catch (error) {
+      console.error(`An error occurred while processing module ${moduleName}:`, error);
+    }
+  })
+
+}
+
+
 async function processScript(filePath) {
   let ast, code;
   try {
@@ -176,6 +207,7 @@ async function dev() {
     })
     .on('ready', async () => {
       await Promise.all(waitList);
+      await addMiniProgramNpm();
       console.log(bold(green(`启动完成，耗时：${Date.now() - startTime}ms`)));
       console.log(bold(green('监听文件变化中...')));
       // Release memory.
@@ -196,6 +228,7 @@ async function prod() {
     const promise = watcher.close();
     waitList.push(promise);
     await Promise.all(waitList);
+    await addMiniProgramNpm();
     console.log(bold(green(`构建完成，耗时：${Date.now() - startTime}ms`)));
   });
 }
