@@ -27,6 +27,50 @@ const terserOptions = {
   format: { comments: false },
 };
 
+const bundledModules = new Set();
+async function bundleModule(module) {
+  if (bundledModules.has(module)) return;
+  bundledModules.add(module);
+
+  const bundle = await rollup({
+    input: module,
+    plugins: [
+      commonjs(),
+      replace({
+        preventAssignment: true,
+        values: {
+          'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
+        },
+      }),
+      resolve(),
+      __PROD__ && terser(terserOptions),
+    ].filter(Boolean),
+  });
+  await bundle.write({
+    exports: 'named',
+    file: `dist/miniprogram_npm/${module}/index.js`,
+    format: 'cjs',
+  });
+}
+
+function traverseAST(ast, onlyBabel = false) {
+  traverse.default(ast, {
+    CallExpression({ node }) {
+      if (
+        node.callee.name !== 'require' ||
+        !t.isStringLiteral(node.arguments[0]) ||
+        node.arguments[0].value.startsWith('.') ||
+        (onlyBabel && !node.arguments[0].value.startsWith('@babel/runtime'))
+      ) {
+        return;
+      }
+
+      const promise = bundleModule(node.arguments[0].value);
+      waitList?.push(promise);
+    },
+  });
+}
+
 async function buildComponentLibrary(name) {
   const pkgPath = fileURLToPath(
     new URL(import.meta.resolve(`${name}/package.json`)),
@@ -57,12 +101,11 @@ async function buildComponentLibrary(name) {
   return new Promise((resolve) => {
     const jobs = [];
     const tnm = async (filePath) => {
-      let { code } = await babel.transformFileAsync(filePath);
-
-      if (__PROD__) {
-        code = (await minify(code, terserOptions)).code;
-      }
-
+      const result = await babel.transformFileAsync(filePath, { ast: true });
+      traverseAST(result.ast, true);
+      const code = __PROD__
+        ? (await minify(result.code, terserOptions)).code
+        : result.code;
       await fs.writeFile(filePath, code);
     };
 
@@ -89,32 +132,6 @@ async function scanDependencies() {
     const promise = buildComponentLibrary(name);
     waitList.push(promise);
   }
-}
-
-const bundledModules = new Set();
-async function bundleModule(module) {
-  if (bundledModules.has(module)) return;
-  bundledModules.add(module);
-
-  const bundle = await rollup({
-    input: module,
-    plugins: [
-      commonjs(),
-      replace({
-        preventAssignment: true,
-        values: {
-          'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
-        },
-      }),
-      resolve(),
-      __PROD__ && terser(terserOptions),
-    ].filter(Boolean),
-  });
-  await bundle.write({
-    exports: 'named',
-    file: `dist/miniprogram_npm/${module}/index.js`,
-    format: 'cjs',
-  });
 }
 
 async function processScript(filePath) {
@@ -150,20 +167,7 @@ async function processScript(filePath) {
     waitList?.push(promise);
   }
 
-  traverse.default(ast, {
-    CallExpression({ node }) {
-      if (
-        node.callee.name !== 'require' ||
-        !t.isStringLiteral(node.arguments[0]) ||
-        node.arguments[0].value.startsWith('.')
-      ) {
-        return;
-      }
-
-      const promise = bundleModule(node.arguments[0].value);
-      waitList?.push(promise);
-    },
-  });
+  traverseAST(ast);
 
   if (__PROD__) {
     code = (await minify(code, terserOptions)).code;
