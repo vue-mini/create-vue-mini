@@ -114,7 +114,7 @@ async function buildComponentLibrary(name) {
       ignored: ['**/.{gitkeep,DS_Store}'],
     });
     watcher.on('add', (filePath) => {
-      if (!/\.js$/.test(filePath)) return;
+      if (!filePath.endsWith('.js')) return;
       const promise = tnm(filePath);
       jobs.push(promise);
     });
@@ -213,17 +213,17 @@ async function processStyle(filePath) {
 }
 
 const cb = async (filePath) => {
-  if (/\.ts$/.test(filePath)) {
+  if (filePath.endsWith('.ts')) {
     await processScript(filePath);
     return;
   }
 
-  if (/\.html$/.test(filePath)) {
+  if (filePath.endsWith('.html')) {
     await processTemplate(filePath);
     return;
   }
 
-  if (/\.css$/.test(filePath)) {
+  if (filePath.endsWith('.css')) {
     await processStyle(filePath);
     return;
   }
