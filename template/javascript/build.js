@@ -54,31 +54,33 @@ async function buildComponentLibrary(name) {
   const destination = path.resolve('dist', 'miniprogram_npm', name);
   await fs.copy(source, destination);
 
-  if (__PROD__) {
-    return new Promise((resolve) => {
-      const jobs = [];
-      const compress = async (filePath) => {
-        let code = await fs.readFile(filePath, 'utf8');
-        code = (await minify(code, terserOptions)).code;
-        await fs.writeFile(filePath, code);
-      };
+  return new Promise((resolve) => {
+    const jobs = [];
+    const tnm = async (filePath) => {
+      let { code } = await babel.transformFileAsync(filePath);
 
-      const watcher = chokidar.watch([destination], {
-        ignored: ['**/.{gitkeep,DS_Store}'],
-      });
-      watcher.on('add', (filePath) => {
-        if (!/\.js$/.test(filePath)) return;
-        const promise = compress(filePath);
-        jobs.push(promise);
-      });
-      watcher.on('ready', async () => {
-        const promise = watcher.close();
-        jobs.push(promise);
-        await Promise.all(jobs);
-        resolve();
-      });
+      if (__PROD__) {
+        code = (await minify(code, terserOptions)).code;
+      }
+
+      await fs.writeFile(filePath, code);
+    };
+
+    const watcher = chokidar.watch([destination], {
+      ignored: ['**/.{gitkeep,DS_Store}'],
     });
-  }
+    watcher.on('add', (filePath) => {
+      if (!/\.js$/.test(filePath)) return;
+      const promise = tnm(filePath);
+      jobs.push(promise);
+    });
+    watcher.on('ready', async () => {
+      const promise = watcher.close();
+      jobs.push(promise);
+      await Promise.all(jobs);
+      resolve();
+    });
+  });
 }
 
 async function scanDependencies() {
