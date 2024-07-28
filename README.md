@@ -18,6 +18,12 @@ npm create vue-mini@latest
 > [!NOTE]
 > `@latest` **不能**省略，否则 `npm` 可能会使用已缓存的旧版本。
 
+## 常见问题
+
+### 如何使用小程序组件库？
+
+`create-vue-mini` 创建的小程序项目对小程序组件库提供了开箱支持，**不需要**使用微信开发者工具的 `工具 -> 构建 npm` 功能，**不需要**勾选 `将 JS 编译成 ES5`，只需要将小程序组件库作为**生产依赖**（即 dependencies）安装，就可以直接使用。`create-vue-mini` 会在幕后帮你将一切处理妥当。
+
 ## 致谢
 
 此项目由 [create-vue](https://github.com/vuejs/create-vue) 修改而来。
