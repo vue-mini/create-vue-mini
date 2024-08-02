@@ -1,0 +1,81 @@
+import globals from 'globals';
+import eslint from '@eslint/js';
+<%_ if (needsTypeScript) { _%>
+import tseslint from 'typescript-eslint';
+<%_ } _%>
+<%_ if (needsPrettier) { _%>
+import prettier from 'eslint-config-prettier';
+<%_ } _%>
+
+<%_ if (needsTypeScript) { _%>
+const config = [
+  {
+    files: ['**/*.js', '**/*.ts'],
+    <%_ if (needsVitest) { _%>
+    ignores: ['dist/**/*', 'coverage/**/*'],
+    <%_ } else { _%>
+    ignores: ['dist/**/*'],
+    <%_ } _%>
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+    },
+    ...eslint.configs.recommended,
+  },
+  {
+    files: ['**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    <%_ if (needsPrettier) { _%>
+    ...prettier,
+    <%_ } _%>
+  },
+  ...tseslint.configs.recommendedTypeChecked.map((c) => ({
+    ...c,
+    files: ['**/*.ts'],
+  })),
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    <%_ if (needsPrettier) { _%>
+    ...prettier,
+    <%_ } _%>
+  },
+];
+<%_ } else { _%>
+const config = [
+  {
+    files: ['**/*.js'],
+    <%_ if (needsVitest) { _%>
+    ignores: ['dist/**/*', 'coverage/**/*'],
+    <%_ } else { _%>
+    ignores: ['dist/**/*'],
+    <%_ } _%>
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+    },
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    <%_ if (needsPrettier) { _%>
+    rules: {
+      ...eslint.configs.recommended.rules,
+      ...prettier.rules,
+    },
+    <%_ } else { _%>
+    ...eslint.configs.recommended,
+    <%_ } _%>
+  },
+];
+<%_ } _%>
+
+export default config;
