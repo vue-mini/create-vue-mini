@@ -33,8 +33,12 @@ async function bundleModule(module) {
   if (bundledModules.has(module)) return;
   bundledModules.add(module);
 
+  const { peerDependencies } = await fs.readJson(fileURLToPath(
+    new URL(import.meta.resolve(`${module}/package.json`)),
+  ), 'utf8');
   const bundle = await rollup({
     input: module,
+    external: peerDependencies ? Object.keys(peerDependencies) : undefined,
     plugins: [
       commonjs(),
       replace({
