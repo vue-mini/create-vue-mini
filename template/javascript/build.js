@@ -28,17 +28,31 @@ const terserOptions = {
   format: { comments: false },
 };
 
+async function resolvePeer(module) {
+  if (!module) return;
+
+  try {
+    const pkg = await fs.readJson(
+      fileURLToPath(new URL(import.meta.resolve(`${module}/package.json`))),
+      'utf8',
+    );
+    return pkg.peerDependencies;
+  } catch {
+    const arr = module.split('/');
+    arr.pop();
+    return resolvePeer(arr.join('/'));
+  }
+}
+
 const bundledModules = new Set();
 async function bundleModule(module) {
   if (bundledModules.has(module)) return;
   bundledModules.add(module);
 
-  const { peerDependencies } = await fs.readJson(fileURLToPath(
-    new URL(import.meta.resolve(`${module}/package.json`)),
-  ), 'utf8');
+  const peer = await resolvePeer(module);
   const bundle = await rollup({
     input: module,
-    external: peerDependencies ? Object.keys(peerDependencies) : undefined,
+    external: peer ? Object.keys(peer) : undefined,
     plugins: [
       commonjs(),
       replace({
@@ -58,14 +72,14 @@ async function bundleModule(module) {
   });
 }
 
-function traverseAST(ast, onlyBabel = false) {
+function traverseAST(ast, babelOnly = false) {
   traverse.default(ast, {
     CallExpression({ node }) {
       if (
         node.callee.name !== 'require' ||
         !t.isStringLiteral(node.arguments[0]) ||
         node.arguments[0].value.startsWith('.') ||
-        (onlyBabel && !node.arguments[0].value.startsWith('@babel/runtime'))
+        (babelOnly && !node.arguments[0].value.startsWith('@babel/runtime'))
       ) {
         return;
       }
