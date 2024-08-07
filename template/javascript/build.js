@@ -44,9 +44,15 @@ async function resolvePeer(module) {
   }
 }
 
+const builtLibraries = [];
 const bundledModules = new Set();
 async function bundleModule(module) {
-  if (bundledModules.has(module)) return;
+  if (
+    bundledModules.has(module) ||
+    builtLibraries.some((library) => module.startsWith(library))
+  ) {
+    return;
+  }
   bundledModules.add(module);
 
   const peer = await resolvePeer(module);
@@ -114,6 +120,7 @@ async function buildComponentLibrary(name) {
 
   if (!source) return;
 
+  builtLibraries.push(name);
   const destination = path.resolve('dist', 'miniprogram_npm', name);
   await fs.copy(source, destination);
 
