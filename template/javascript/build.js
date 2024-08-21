@@ -100,15 +100,15 @@ async function buildComponentLibrary(name) {
   const pkgPath = fileURLToPath(
     new URL(import.meta.resolve(`${name}/package.json`)),
   );
-  const modulePath = path.dirname(pkgPath);
+  const libPath = path.dirname(pkgPath);
   const { miniprogram } = await fs.readJson(pkgPath, 'utf8');
 
   let source = '';
   if (miniprogram) {
-    source = path.join(modulePath, miniprogram);
+    source = path.join(libPath, miniprogram);
   } else {
     try {
-      const dist = path.join(modulePath, 'miniprogram_dist');
+      const dist = path.join(libPath, 'miniprogram_dist');
       const stats = await fs.stat(dist);
       if (stats.isDirectory()) {
         source = dist;
