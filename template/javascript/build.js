@@ -1,5 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import fs from 'fs-extra';
 import chokidar from 'chokidar';
 import babel from '@babel/core';
@@ -32,7 +33,7 @@ async function resolvePeer(module) {
 
   try {
     const pkg = await fs.readJson(
-      path.resolve('node_modules', module, 'package.json'),
+      fileURLToPath(new URL(import.meta.resolve(`${module}/package.json`))),
       'utf8',
     );
     return pkg.peerDependencies;
@@ -96,18 +97,18 @@ function traverseAST(ast, babelOnly = false) {
 }
 
 async function buildComponentLibrary(name) {
-  const libPath = path.resolve('node_modules', name);
-  const { miniprogram } = await fs.readJson(
-    path.join(libPath, 'package.json'),
-    'utf8',
+  const pkgPath = fileURLToPath(
+    new URL(import.meta.resolve(`${name}/package.json`)),
   );
+  const modulePath = path.dirname(pkgPath);
+  const { miniprogram } = await fs.readJson(pkgPath, 'utf8');
 
   let source = '';
   if (miniprogram) {
-    source = path.join(libPath, miniprogram);
+    source = path.join(modulePath, miniprogram);
   } else {
     try {
-      const dist = path.join(libPath, 'miniprogram_dist');
+      const dist = path.join(modulePath, 'miniprogram_dist');
       const stats = await fs.stat(dist);
       if (stats.isDirectory()) {
         source = dist;
