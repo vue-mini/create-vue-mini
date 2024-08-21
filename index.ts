@@ -164,8 +164,8 @@ function getCommand(packageManager: string, scriptName: string) {
     return packageManager === 'yarn' ? 'yarn' : `${packageManager} install`
   }
 
-  return packageManager === 'npm' ?
-      `npm run ${scriptName}`
+  return ['npm', 'bun'].includes(packageManager) ?
+      `${packageManager} run ${scriptName}`
     : `${packageManager} ${scriptName}`
 }
 
@@ -405,6 +405,7 @@ async function init() {
   const packageManager =
     userAgent.includes('pnpm') ? 'pnpm'
     : userAgent.includes('yarn') ? 'yarn'
+    : userAgent.includes('bun') ? 'bun'
     : 'npm'
 
   const render = (templateName: string) => {
@@ -416,7 +417,7 @@ async function init() {
       needsStylelint,
       needsPrettier,
       packageManager:
-        packageManager === 'npm' ? '' : (
+        ['npm', 'bun'].includes(packageManager) ? '' : (
           userAgent.split(' ')[0].replace('/', '@')
         ),
     })
