@@ -5,7 +5,6 @@
  */
 import path from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 import fs from 'fs-extra';
 import chokidar from 'chokidar';
 import babel from '@babel/core';
@@ -40,7 +39,7 @@ async function resolvePeer(module) {
   try {
     const pkg = await fs.readJson(
       getPackageInfoSync(module).packageJsonPath,
-      "utf8"
+      'utf8'
     );
     return pkg.peerDependencies;
   } catch {
