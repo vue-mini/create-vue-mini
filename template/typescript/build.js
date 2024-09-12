@@ -20,6 +20,7 @@ import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { green, bold } from 'kolorist';
+import { getPackageInfoSync } from "local-pkg";
 
 let topLevelJobs = [];
 let bundleJobs = [];
@@ -38,8 +39,8 @@ async function resolvePeer(module) {
 
   try {
     const pkg = await fs.readJson(
-      fileURLToPath(new URL(import.meta.resolve(`${module}/package.json`))),
-      'utf8',
+      getPackageInfoSync(module).packageJsonPath,
+      "utf8"
     );
     return pkg.peerDependencies;
   } catch {
@@ -102,9 +103,7 @@ function traverseAST(ast, babelOnly = false) {
 }
 
 async function buildComponentLibrary(name) {
-  const pkgPath = fileURLToPath(
-    new URL(import.meta.resolve(`${name}/package.json`)),
-  );
+  const pkgPath = getPackageInfoSync(name).packageJsonPath;
   const libPath = path.dirname(pkgPath);
   const { miniprogram } = await fs.readJson(pkgPath, 'utf8');
 
