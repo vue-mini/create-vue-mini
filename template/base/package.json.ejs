@@ -29,25 +29,25 @@
     "build": "cross-env NODE_ENV=production node build.js"
   },
   "dependencies": {
-    "@babel/runtime": "^7.25.0",
-    "@vue-mini/core": "^1.0.2",
+    "@babel/runtime": "^7.25.6",
+    "@vue-mini/core": "^1.0.3",
     "promise-polyfill": "^8.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@babel/plugin-transform-runtime": "^7.24.7",
-    "@babel/preset-env": "^7.25.3",
+    "@babel/plugin-transform-runtime": "^7.25.4",
+    "@babel/preset-env": "^7.25.4",
     <%_ if (needsTypeScript) { _%>
     "@babel/preset-typescript": "^7.24.7",
     <%_ } _%>
-    "@babel/traverse": "^7.25.3",
-    "@babel/types": "^7.25.2",
+    "@babel/traverse": "^7.25.6",
+    "@babel/types": "^7.25.6",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
     <%_ if (needsTypeScript && needsVitest) { _%>
-    "@types/node": "^22.0.2",
+    "@types/node": "^22.5.4",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
     "@vitest/coverage-v8": "^2.0.5",
@@ -58,7 +58,7 @@
     "chokidar": "^3.6.0",
     "cross-env": "^7.0.3",
     <%_ if (needsEslint) { _%>
-    "eslint": "^9.8.0",
+    "eslint": "^9.10.0",
     <%_ if (needsPrettier) { _%>
     "eslint-config-prettier": "^9.1.0",
     <%_ } _%>
@@ -69,23 +69,23 @@
     <%_ } _%>
     "kolorist": "^1.8.0",
     "local-pkg": "^0.5.0",
-    "postcss": "^8.4.40",
+    "postcss": "^8.4.45",
     "postcss-load-config": "^6.0.1",
     "postcss-pxtorpx-pro": "^2.0.0",
     <%_ if (needsPrettier) { _%>
     "prettier": "^3.3.3",
     <%_ } _%>
-    "rollup": "^4.19.2",
+    "rollup": "^4.21.3",
     <%_ if (needsStylelint) { _%>
-    "stylelint": "^16.8.1",
+    "stylelint": "^16.9.0",
     "stylelint-config-standard": "^36.0.1",
     <%_ } _%>
-    "terser": "^5.31.3",
+    "terser": "^5.32.0",
     <%_ if (needsTypeScript) { _%>
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.2",
     <%_ } _%>
     <%_ if (needsTypeScript && needsEslint) { _%>
-    "typescript-eslint": "^8.0.0",
+    "typescript-eslint": "^8.5.0",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
     "vitest": "^2.0.5",
