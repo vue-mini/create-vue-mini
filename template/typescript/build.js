@@ -39,7 +39,7 @@ async function resolvePeer(module) {
   try {
     const pkg = await fs.readJson(
       getPackageInfoSync(module).packageJsonPath,
-      'utf8'
+      'utf8',
     );
     return pkg.peerDependencies;
   } catch {
