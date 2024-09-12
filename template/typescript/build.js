@@ -5,7 +5,6 @@
  */
 import path from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 import fs from 'fs-extra';
 import chokidar from 'chokidar';
 import babel from '@babel/core';
@@ -20,6 +19,7 @@ import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { green, bold } from 'kolorist';
+import { getPackageInfo } from 'local-pkg';
 
 let topLevelJobs = [];
 let bundleJobs = [];
@@ -33,22 +33,6 @@ const terserOptions = {
   format: { comments: false },
 };
 
-async function resolvePeer(module) {
-  if (!module) return;
-
-  try {
-    const pkg = await fs.readJson(
-      fileURLToPath(new URL(import.meta.resolve(`${module}/package.json`))),
-      'utf8',
-    );
-    return pkg.peerDependencies;
-  } catch {
-    const arr = module.split('/');
-    arr.pop();
-    return resolvePeer(arr.join('/'));
-  }
-}
-
 const builtLibraries = [];
 const bundledModules = new Set();
 async function bundleModule(module) {
@@ -60,10 +44,10 @@ async function bundleModule(module) {
   }
   bundledModules.add(module);
 
-  const peer = await resolvePeer(module);
+  const { peerDependencies } = await getPackageInfo(module).packageJson;
   const bundle = await rollup({
     input: module,
-    external: peer ? Object.keys(peer) : undefined,
+    external: peerDependencies ? Object.keys(peerDependencies) : undefined,
     plugins: [
       commonjs(),
       replace({
@@ -102,18 +86,17 @@ function traverseAST(ast, babelOnly = false) {
 }
 
 async function buildComponentLibrary(name) {
-  const pkgPath = fileURLToPath(
-    new URL(import.meta.resolve(`${name}/package.json`)),
-  );
-  const libPath = path.dirname(pkgPath);
-  const { miniprogram } = await fs.readJson(pkgPath, 'utf8');
+  const {
+    rootPath,
+    packageJson: { miniprogram },
+  } = await getPackageInfo(name);
 
   let source = '';
   if (miniprogram) {
-    source = path.join(libPath, miniprogram);
+    source = path.join(rootPath, miniprogram);
   } else {
     try {
-      const dist = path.join(libPath, 'miniprogram_dist');
+      const dist = path.join(rootPath, 'miniprogram_dist');
       const stats = await fs.stat(dist);
       if (stats.isDirectory()) {
         source = dist;
