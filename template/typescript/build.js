@@ -44,7 +44,9 @@ async function bundleModule(module) {
   }
   bundledModules.add(module);
 
-  const { peerDependencies } = await getPackageInfo(module).packageJson;
+  const {
+    packageJson: { peerDependencies },
+  } = await getPackageInfo(module);
   const bundle = await rollup({
     input: module,
     external: peerDependencies ? Object.keys(peerDependencies) : undefined,
