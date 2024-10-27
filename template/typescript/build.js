@@ -126,10 +126,9 @@ async function buildComponentLibrary(name) {
     };
 
     const watcher = chokidar.watch([destination], {
-      ignored: ['**/.{gitkeep,DS_Store}'],
+      ignored: (path, stats) => stats?.isFile() && !path.endsWith('.js'),
     });
     watcher.on('add', (filePath) => {
-      if (!filePath.endsWith('.js')) return;
       const promise = tnm(filePath);
       jobs.push(promise);
     });
@@ -251,7 +250,9 @@ async function dev() {
   await scanDependencies();
   chokidar
     .watch(['src'], {
-      ignored: ['**/.{gitkeep,DS_Store}'],
+      ignored: (path, stats) =>
+        stats?.isFile() &&
+        (path.endsWith('.gitkeep') || path.endsWith('.DS_Store')),
     })
     .on('add', (filePath) => {
       const promise = cb(filePath);
@@ -275,7 +276,9 @@ async function prod() {
   await fs.remove('dist');
   await scanDependencies();
   const watcher = chokidar.watch(['src'], {
-    ignored: ['**/.{gitkeep,DS_Store}'],
+    ignored: (path, stats) =>
+      stats?.isFile() &&
+      (path.endsWith('.gitkeep') || path.endsWith('.DS_Store')),
   });
   watcher.on('add', (filePath) => {
     const promise = cb(filePath);
