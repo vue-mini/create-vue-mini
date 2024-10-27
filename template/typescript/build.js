@@ -203,7 +203,7 @@ async function processTemplate(filePath) {
 
 async function processStyle(filePath) {
   const source = await fs.readFile(filePath, 'utf8');
-  const { plugins, options } = await postcssrc({ from: undefined });
+  const { plugins, options } = await postcssrc({ from: filePath });
 
   let css;
   try {
