@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/ejs": "^3.1.5",
-    "@types/node": "^22.8.1",
+    "@types/node": "^22.9.0",
     "@types/prompts": "^2.4.9",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3",
