@@ -33,16 +33,34 @@ const terserOptions = {
   format: { comments: false },
 };
 
+let independentPackages = [];
+async function findIndependentPackages() {
+  const { subpackages } = await fs.readJson(
+    path.resolve('src', 'app.json'),
+    'utf8',
+  );
+  if (subpackages) {
+    independentPackages = subpackages
+      .filter(({ independent }) => independent)
+      .map(({ root }) => root);
+  }
+}
+
 const builtLibraries = [];
-const bundledModules = new Set();
-async function bundleModule(module) {
+const bundledModules = new Map();
+async function bundleModule(module, pkg) {
+  const bundled = bundledModules.get(pkg);
   if (
-    bundledModules.has(module) ||
+    bundled?.has(module) ||
     builtLibraries.some((library) => module.startsWith(library))
   ) {
-    return;
+    return false;
   }
-  bundledModules.add(module);
+  if (bundled) {
+    bundled.add(module);
+  } else {
+    bundledModules.set(pkg, new Set([module]));
+  }
 
   const {
     packageJson: { peerDependencies },
@@ -64,12 +82,13 @@ async function bundleModule(module) {
   });
   await bundle.write({
     exports: 'named',
-    file: `dist/miniprogram_npm/${module}/index.js`,
+    file: `${pkg.replace('src', 'dist')}/miniprogram_npm/${module}/index.js`,
     format: 'cjs',
   });
+  return true;
 }
 
-function traverseAST(ast, babelOnly = false) {
+function traverseAST(ast, pkg, babelOnly = false) {
   traverse.default(ast, {
     CallExpression({ node }) {
       if (
@@ -81,7 +100,27 @@ function traverseAST(ast, babelOnly = false) {
         return;
       }
 
-      const promise = bundleModule(node.arguments[0].value);
+      const module = node.arguments[0].value;
+      let promise = bundleModule(module, pkg);
+      if (babelOnly) {
+        promise = promise.then((valid) => {
+          if (!valid) return;
+          return Promise.all(
+            independentPackages.map((item) => {
+              const bundled = bundledModules.get(item);
+              if (bundled) {
+                bundled.add(module);
+              } else {
+                bundledModules.set(pkg, new Set([module]));
+              }
+              return fs.copy(
+                path.resolve('dist', 'miniprogram_npm', module),
+                path.resolve('dist', item, 'miniprogram_npm', module),
+              );
+            }),
+          );
+        });
+      }
       bundleJobs?.push(promise);
     },
   });
@@ -118,7 +157,7 @@ async function buildComponentLibrary(name) {
     const jobs = [];
     const tnm = async (filePath) => {
       const result = await babel.transformFileAsync(filePath, { ast: true });
-      traverseAST(result.ast, true);
+      traverseAST(result.ast, 'src', true);
       const code = __PROD__
         ? (await minify(result.code, terserOptions)).code
         : result.code;
@@ -126,7 +165,7 @@ async function buildComponentLibrary(name) {
     };
 
     const watcher = chokidar.watch([destination], {
-      ignored: (path, stats) => stats?.isFile() && !path.endsWith('.js'),
+      ignored: (file, stats) => stats?.isFile() && !file.endsWith('.js'),
     });
     watcher.on('add', (filePath) => {
       const promise = tnm(filePath);
@@ -136,6 +175,16 @@ async function buildComponentLibrary(name) {
       const promise = watcher.close();
       jobs.push(promise);
       await Promise.all(jobs);
+      if (independentPackages.length > 0) {
+        await Promise.all(
+          independentPackages.map((item) =>
+            fs.copy(
+              destination,
+              path.resolve('dist', item, 'miniprogram_npm', name),
+            ),
+          ),
+        );
+      }
       resolve();
     });
   });
@@ -166,7 +215,11 @@ async function processScript(filePath) {
     return;
   }
 
-  traverseAST(ast);
+  const pkg = independentPackages.find((item) =>
+    filePath.startsWith(path.normalize(`src/${item}`)),
+  );
+  // The `src/` prefix is added to to distinguish `src` and `src/src`.
+  traverseAST(ast, pkg ? `src/${pkg}` : 'src');
 
   if (__PROD__) {
     code = (await minify(code, terserOptions)).code;
@@ -231,12 +284,13 @@ const cb = async (filePath) => {
 
 async function dev() {
   await fs.remove('dist');
+  await findIndependentPackages();
   await scanDependencies();
   chokidar
     .watch(['src'], {
-      ignored: (path, stats) =>
+      ignored: (file, stats) =>
         stats?.isFile() &&
-        (path.endsWith('.gitkeep') || path.endsWith('.DS_Store')),
+        (file.endsWith('.gitkeep') || file.endsWith('.DS_Store')),
     })
     .on('add', (filePath) => {
       const promise = cb(filePath);
@@ -258,11 +312,12 @@ async function dev() {
 
 async function prod() {
   await fs.remove('dist');
+  await findIndependentPackages();
   await scanDependencies();
   const watcher = chokidar.watch(['src'], {
-    ignored: (path, stats) =>
+    ignored: (file, stats) =>
       stats?.isFile() &&
-      (path.endsWith('.gitkeep') || path.endsWith('.DS_Store')),
+      (file.endsWith('.gitkeep') || file.endsWith('.DS_Store')),
   });
   watcher.on('add', (filePath) => {
     const promise = cb(filePath);
