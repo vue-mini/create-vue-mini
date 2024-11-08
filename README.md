@@ -22,7 +22,11 @@ npm create vue-mini@latest
 
 ### 如何使用小程序组件库？
 
-`create-vue-mini` 创建的小程序项目对小程序组件库提供了开箱支持，**不需要**使用微信开发者工具的 `工具 -> 构建 npm` 功能，**不需要**勾选 `将 JS 编译成 ES5`，只需要将小程序组件库作为**生产依赖**（即 dependencies）安装，就可以直接使用。`create-vue-mini` 会在幕后帮你将一切处理妥当。视频介绍：[《Vue Mini 如何使用小程序组件库》](https://www.bilibili.com/video/BV1w1421t7US/)
+`create-vue-mini` 对小程序组件库提供了开箱支持，**不需要**使用微信开发者工具的 `工具 -> 构建 npm` 功能，**不需要**勾选 `将 JS 编译成 ES5`，只需要将小程序组件库作为**生产依赖**（即 dependencies）安装，就可以直接使用。`create-vue-mini` 会在幕后帮你将一切处理妥当。视频介绍：[《Vue Mini 如何使用小程序组件库》](https://www.bilibili.com/video/BV1w1421t7US/)
+
+### 支持小程序独立分包吗？
+
+支持。但是不支持动态添加独立分包，也就是说在 `app.json` 添加独立分包后需要重启开发服务器。
 
 ## 致谢
 
