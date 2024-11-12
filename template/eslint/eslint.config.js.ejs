@@ -26,6 +26,9 @@ const config = [
     languageOptions: {
       globals: {
         ...globals.node,
+        wx: 'readonly',
+        getApp: 'readonly',
+        getCurrentPages: 'readonly',
       },
     },
     <%_ if (needsPrettier) { _%>

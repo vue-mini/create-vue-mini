@@ -264,7 +264,7 @@ async function processStyle(filePath) {
 }
 
 const cb = async (filePath) => {
-  if (filePath.endsWith('.ts')) {
+  if (filePath.endsWith('.ts') || filePath.endsWith('.js')) {
     await processScript(filePath);
     return;
   }
