@@ -10,12 +10,14 @@ import prettier from 'eslint-config-prettier';
 <%_ if (needsTypeScript) { _%>
 const config = [
   {
-    files: ['**/*.js', '**/*.ts'],
     <%_ if (needsVitest) { _%>
-    ignores: ['dist/**/*', 'coverage/**/*'],
+    ignores: ['dist/', 'coverage/'],
     <%_ } else { _%>
-    ignores: ['dist/**/*'],
+    ignores: ['dist/'],
     <%_ } _%>
+  },
+  {
+    files: ['**/*.js', '**/*.ts'],
     linterOptions: {
       reportUnusedDisableDirectives: true,
     },
