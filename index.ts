@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -258,7 +260,6 @@ ${getCommand(packageManager, 'test')}
   return readme
 }
 
-// eslint-disable-next-line complexity
 async function init() {
   console.log()
   console.log(
@@ -369,6 +370,7 @@ async function init() {
         },
       },
     )
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error(error.message)
     process.exit(1)
