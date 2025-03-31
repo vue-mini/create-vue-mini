@@ -447,6 +447,10 @@ async function init() {
 
   // Vitest should be the last one to render.
   if (needsVitest) {
+    if (packageManager === 'pnpm') {
+      render('vitest-pnpm')
+    }
+
     if (needsTypeScript) {
       render('vitest-typescript')
     } else {
