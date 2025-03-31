@@ -29,65 +29,68 @@
     "build": "cross-env NODE_ENV=production node build.js"
   },
   "dependencies": {
-    "@babel/runtime": "^7.26.0",
-    "@vue-mini/core": "^1.2.0"
+    "@babel/runtime": "^7.27.0",
+    "@vue-mini/core": "^1.2.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@babel/plugin-transform-runtime": "^7.25.9",
-    "@babel/preset-env": "^7.26.0",
+    "@babel/core": "^7.26.10",
+    "@babel/plugin-transform-runtime": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
     <%_ if (needsTypeScript) { _%>
-    "@babel/preset-typescript": "^7.26.0",
+    "@babel/preset-typescript": "^7.27.0",
     <%_ } _%>
-    "@babel/traverse": "^7.25.9",
-    "@babel/types": "^7.26.0",
-    "@rollup/plugin-commonjs": "^28.0.1",
-    "@rollup/plugin-node-resolve": "^15.3.0",
-    "@rollup/plugin-replace": "^6.0.1",
+    "@babel/traverse": "^7.27.0",
+    "@babel/types": "^7.27.0",
+    <%_ if (needsEslint) { _%>
+    "@eslint/js": "^9.23.0",
+    <%_ } _%>
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-terser": "^0.4.4",
     <%_ if (needsTypeScript && needsVitest) { _%>
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.13.14",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
-    "@vitest/coverage-v8": "^2.1.4",
+    "@vitest/coverage-v8": "^3.1.1",
     <%_ } _%>
     "babel-plugin-autocomplete-index": "^0.2.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
-    "chokidar": "^4.0.1",
+    "chokidar": "^4.0.3",
     "cross-env": "^7.0.3",
     <%_ if (needsEslint) { _%>
-    "eslint": "^9.14.0",
+    "eslint": "^9.23.0",
     <%_ if (needsPrettier) { _%>
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.1.1",
     <%_ } _%>
     <%_ } _%>
-    "fs-extra": "^11.2.0",
+    "fs-extra": "^11.3.0",
     <%_ if (needsEslint) { _%>
-    "globals": "^15.12.0",
+    "globals": "^16.0.0",
     <%_ } _%>
     "kolorist": "^1.8.0",
-    "local-pkg": "^0.5.0",
-    "postcss": "^8.4.49",
+    "local-pkg": "^1.1.1",
+    "postcss": "^8.5.3",
     "postcss-load-config": "^6.0.1",
     "postcss-pxtorpx-pro": "^2.0.0",
     <%_ if (needsPrettier) { _%>
-    "prettier": "^3.3.3",
+    "prettier": "^3.5.3",
     <%_ } _%>
-    "rollup": "^4.25.0",
+    "rollup": "^4.38.0",
     <%_ if (needsStylelint) { _%>
-    "stylelint": "^16.10.0",
-    "stylelint-config-standard": "^36.0.1",
+    "stylelint": "^16.17.0",
+    "stylelint-config-standard": "^37.0.0",
     <%_ } _%>
-    "terser": "^5.36.0",
+    "terser": "^5.39.0",
     <%_ if (needsTypeScript) { _%>
-    "typescript": "^5.6.3",
+    "typescript": "^5.8.2",
     <%_ } _%>
     <%_ if (needsTypeScript && needsEslint) { _%>
-    "typescript-eslint": "^8.14.0",
+    "typescript-eslint": "^8.28.0",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
-    "vitest": "^2.1.4",
+    "vitest": "^3.1.1",
     <%_ } _%>
     trailing-comma
   },
