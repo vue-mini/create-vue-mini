@@ -30,7 +30,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.27.0",
-    "@vue-mini/core": "^1.2.2"
+    "@vue-mini/core": "^1.2.2",
+    <%_ if (needsPinia) { _%>
+    "@vue-mini/pinia": "^0.1.2",
+    <%_ } _%>
+    trailing-comma
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",

@@ -98,6 +98,7 @@ type Result = {
   shouldOverwrite?: boolean
   packageName?: string
   needsTypeScript?: boolean
+  needsPinia?: boolean
   needsVitest?: boolean
   needsEslint?: boolean
   needsStylelint?: boolean
@@ -137,7 +138,7 @@ function renderTemplate(
     let content = ejs.render(template, result)
 
     if (filename === 'package.json.ejs') {
-      content = content.replace(',\n    trailing-comma', '')
+      content = content.replaceAll(',\n    trailing-comma', '')
     }
 
     fs.writeFileSync(dest.replace(/\.ejs$/, ''), content)
@@ -331,6 +332,14 @@ async function init() {
           inactive: '否',
         },
         {
+          name: 'needsPinia',
+          type: 'toggle',
+          message: '是否引入 Pinia 用于状态管理？（试验）',
+          initial: false,
+          active: '是',
+          inactive: '否',
+        },
+        {
           name: 'needsVitest',
           type: 'toggle',
           message: '是否引入 Vitest 用于单元测试？',
@@ -383,6 +392,7 @@ async function init() {
     shouldOverwrite = false,
     packageName = projectName ?? defaultProjectName,
     needsTypeScript = false,
+    needsPinia = false,
     needsVitest = false,
     needsEslint = false,
     needsStylelint = false,
@@ -414,6 +424,7 @@ async function init() {
     renderTemplate(path.resolve(templateRoot, templateName), root, {
       packageName,
       needsTypeScript,
+      needsPinia,
       needsVitest,
       needsEslint,
       needsStylelint,
@@ -431,6 +442,14 @@ async function init() {
     render('typescript')
   } else {
     render('javascript')
+  }
+
+  if (needsPinia) {
+    if (needsTypeScript) {
+      render('pinia-typescript')
+    } else {
+      render('pinia')
+    }
   }
 
   if (needsEslint) {
@@ -464,6 +483,7 @@ async function init() {
       packageManager,
       projectName: projectName ?? packageName ?? defaultProjectName,
       needsTypeScript,
+      needsPinia,
       needsVitest,
       needsEslint,
       needsStylelint,
