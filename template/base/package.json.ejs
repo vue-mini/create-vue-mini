@@ -29,31 +29,31 @@
     "build": "cross-env NODE_ENV=production node build.js"
   },
   "dependencies": {
-    "@babel/runtime": "^7.28.2",
-    "@vue-mini/core": "^1.2.4",
+    "@babel/runtime": "^7.28.4",
+    "@vue-mini/core": "^1.2.5",
     <%_ if (needsPinia) { _%>
-    "@vue-mini/pinia": "^0.1.2",
+    "@vue-mini/pinia": "^1.0.0",
     <%_ } _%>
     trailing-comma
   },
   "devDependencies": {
-    "@babel/core": "^7.28.0",
-    "@babel/plugin-transform-runtime": "^7.28.0",
-    "@babel/preset-env": "^7.28.0",
+    "@babel/core": "^7.28.4",
+    "@babel/plugin-transform-runtime": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
     <%_ if (needsTypeScript) { _%>
     "@babel/preset-typescript": "^7.27.1",
     <%_ } _%>
-    "@babel/traverse": "^7.28.0",
-    "@babel/types": "^7.28.2",
+    "@babel/traverse": "^7.28.4",
+    "@babel/types": "^7.28.4",
     <%_ if (needsEslint) { _%>
-    "@eslint/js": "^9.32.0",
+    "@eslint/js": "^9.35.0",
     <%_ } _%>
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-terser": "^0.4.4",
     <%_ if (needsTypeScript && needsVitest) { _%>
-    "@types/node": "^24.1.0",
+    "@types/node": "^24.3.1",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
     "@vitest/coverage-v8": "^3.2.4",
@@ -64,34 +64,34 @@
     "chokidar": "^4.0.3",
     "cross-env": "^10.0.0",
     <%_ if (needsEslint) { _%>
-    "eslint": "^9.32.0",
+    "eslint": "^9.35.0",
     <%_ if (needsPrettier) { _%>
     "eslint-config-prettier": "^10.1.8",
     <%_ } _%>
     <%_ } _%>
-    "fs-extra": "^11.3.0",
+    "fs-extra": "^11.3.1",
     <%_ if (needsEslint) { _%>
-    "globals": "^16.3.0",
+    "globals": "^16.4.0",
     <%_ } _%>
     "kolorist": "^1.8.0",
-    "local-pkg": "^1.1.1",
+    "local-pkg": "^1.1.2",
     "postcss": "^8.5.6",
     "postcss-load-config": "^6.0.1",
     "postcss-pxtorpx-pro": "^2.0.0",
     <%_ if (needsPrettier) { _%>
     "prettier": "^3.6.2",
     <%_ } _%>
-    "rollup": "^4.46.2",
+    "rollup": "^4.50.1",
     <%_ if (needsStylelint) { _%>
-    "stylelint": "^16.23.0",
+    "stylelint": "^16.24.0",
     "stylelint-config-standard": "^39.0.0",
     <%_ } _%>
-    "terser": "^5.43.1",
+    "terser": "^5.44.0",
     <%_ if (needsTypeScript) { _%>
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     <%_ } _%>
     <%_ if (needsTypeScript && needsEslint) { _%>
-    "typescript-eslint": "^8.38.0",
+    "typescript-eslint": "^8.43.0",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
     "vitest": "^3.2.4",
