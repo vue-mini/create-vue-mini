@@ -334,7 +334,7 @@ async function init() {
         {
           name: 'needsPinia',
           type: 'toggle',
-          message: '是否引入 Pinia 用于状态管理？（试验）',
+          message: '是否引入 Pinia 用于状态管理？',
           initial: false,
           active: '是',
           inactive: '否',
