@@ -3,7 +3,7 @@
 创建 Vue Mini 小程序项目的最佳方案。
 
 <p align="center">
-  <img src="https://github.com/vue-mini/create-vue-mini/blob/main/media/screenshot-cli.png?raw=true" width="738">
+  <img src="https://github.com/vue-mini/create-vue-mini/blob/main/media/screenshot-cli-v2.png?raw=true" width="752">
 </p>
 
 ## 使用
