@@ -1,6 +1,6 @@
 {
   "name": "create-vue-mini",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "type": "module",
   "packageManager": "pnpm@10.17.1",
   "description": "Vue Mini 脚手架",

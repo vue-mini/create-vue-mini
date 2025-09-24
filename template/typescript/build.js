@@ -1,5 +1,5 @@
 /**
- * @version v1.4.2
+ * @version v1.4.3
  * https://github.com/vue-mini/create-vue-mini
  * 请谨慎修改此文件，改动过多可能会导致你后续升级困难。
  */
