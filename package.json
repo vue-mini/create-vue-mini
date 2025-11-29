@@ -2,7 +2,7 @@
   "name": "create-vue-mini",
   "version": "1.4.3",
   "type": "module",
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.24.0",
   "description": "Vue Mini 脚手架",
   "bin": {
     "create-vue-mini": "outfile.js"
