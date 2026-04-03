@@ -24,18 +24,18 @@
   "author": "Yang Mingshan <y.mingshan3@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "ejs": "^4.0.1",
+    "ejs": "^5.0.1",
     "kolorist": "^1.8.0",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/ejs": "^3.1.5",
-    "@types/node": "^25.3.0",
+    "@types/node": "^25.5.0",
     "@types/prompts": "^2.4.9",
-    "eslint": "^10.0.2",
+    "eslint": "^10.1.0",
     "prettier": "^3.8.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1"
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.0"
   }
 }
