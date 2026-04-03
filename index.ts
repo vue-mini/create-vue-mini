@@ -412,7 +412,7 @@ async function init() {
   const templateRoot = fileURLToPath(new URL('template', import.meta.url))
 
   // Instructions:
-  // Supported package managers: pnpm > yarn > npm
+  // Supported package managers: pnpm > yarn > bun > npm
   const userAgent = process.env.npm_config_user_agent ?? ''
   const packageManager =
     userAgent.includes('pnpm') ? 'pnpm'
@@ -466,10 +466,6 @@ async function init() {
 
   // Vitest should be the last one to render.
   if (needsVitest) {
-    if (packageManager === 'pnpm') {
-      render('vitest-pnpm')
-    }
-
     if (needsTypeScript) {
       render('vitest-typescript')
     } else {
