@@ -55,7 +55,7 @@
     "bigPackageSizeSupport": false
   },
   "compileType": "miniprogram",
-  "libVersion": "development",
+  "libVersion": "latest",
   "appid": "",
   "projectname": "vue-mini-project",
   "simulatorType": "wechat",
