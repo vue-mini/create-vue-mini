@@ -108,9 +108,7 @@ type Result = {
 function renderTemplate(
   src: string,
   dest: string,
-  result: Required<Omit<Result, 'projectName' | 'shouldOverwrite'>> & {
-    packageManager: string
-  },
+  result: Required<Omit<Result, 'projectName' | 'shouldOverwrite'>>,
 ) {
   const stats = fs.statSync(src)
 
@@ -429,10 +427,6 @@ async function init() {
       needsEslint,
       needsStylelint,
       needsPrettier,
-      packageManager:
-        ['npm', 'bun'].includes(packageManager) ? '' : (
-          userAgent.split(' ')[0].replace('/', '@')
-        ),
     })
   }
 
