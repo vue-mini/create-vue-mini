@@ -97,6 +97,7 @@ type Result = {
   projectName?: string
   shouldOverwrite?: boolean
   packageName?: string
+  needsSkyline?: boolean
   needsTypeScript?: boolean
   needsPinia?: boolean
   needsVitest?: boolean
@@ -146,13 +147,19 @@ function renderTemplate(
   if (filename === 'project.config.json') {
     const project = JSON.parse(fs.readFileSync(src, 'utf8'))
     project.projectname = result.packageName
+    if (result.needsSkyline) {
+      project.setting.compileWorklet = true
+      project.setting.skylineRenderEnable = true
+    }
     fs.writeFileSync(dest, JSON.stringify(project, null, 2) + '\n')
     return
   }
 
   if (filename === 'app.json') {
     const app = JSON.parse(fs.readFileSync(src, 'utf8'))
-    app.window.navigationBarTitleText = result.packageName
+    if (!result.needsSkyline) {
+      app.window.navigationBarTitleText = result.packageName
+    }
     fs.writeFileSync(dest, JSON.stringify(app, null, 2) + '\n')
     return
   }
@@ -179,7 +186,7 @@ function generateReadme({
   needsStylelint,
   needsPrettier,
 }: { packageManager: string } & Required<
-  Omit<Result, 'packageName' | 'shouldOverwrite'>
+  Omit<Result, 'packageName' | 'shouldOverwrite' | 'needsSkyline'>
 >) {
   let readme = `# ${projectName}
 
@@ -322,6 +329,14 @@ async function init() {
             isValidPackageName(dir) || '无效的 package.json 名称',
         },
         {
+          name: 'needsSkyline',
+          type: 'toggle',
+          message: '是否使用 Skyline 渲染？',
+          initial: false,
+          active: '是',
+          inactive: '否',
+        },
+        {
           name: 'needsTypeScript',
           type: 'toggle',
           message: '是否使用 TypeScript 语法？',
@@ -389,6 +404,7 @@ async function init() {
     projectName,
     shouldOverwrite = false,
     packageName = projectName ?? defaultProjectName,
+    needsSkyline = false,
     needsTypeScript = false,
     needsPinia = false,
     needsVitest = false,
@@ -421,6 +437,7 @@ async function init() {
   const render = (templateName: string) => {
     renderTemplate(path.resolve(templateRoot, templateName), root, {
       packageName,
+      needsSkyline,
       needsTypeScript,
       needsPinia,
       needsVitest,
@@ -436,6 +453,15 @@ async function init() {
     render('typescript')
   } else {
     render('javascript')
+  }
+
+  if (needsSkyline) {
+    render('skyline')
+    if (needsTypeScript) {
+      render('skyline-typescript')
+    } else {
+      render('skyline-javascript')
+    }
   }
 
   if (needsPinia) {
