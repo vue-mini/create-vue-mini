@@ -2,6 +2,7 @@
   <pan-gesture-handler worklet:ongesture="pan">
     <image class="logo" src="/images/vue-mini.png" />
   </pan-gesture-handler>
-  <view class="greeting">{{ greeting }}</view>
-  <view class="hint">拖动 Logo 试试</view>
+  <view class="greeting">欢迎使用 Vue Mini</view>
+  <count-button class="count" count="{{ count }}" bind:increment="increment" />
+  <view class="hint">Logo 可以拖动哦！</view>
 </view>

@@ -1,7 +1,11 @@
 import { defineComponent, ref } from '@vue-mini/core';
 
 defineComponent((_, context) => {
-  const greeting = ref('欢迎使用 Vue Mini');
+  const count = ref(0);
+
+  const increment = () => {
+    count.value += 1;
+  };
 
   const offset = wx.worklet.shared({ x: 0, y: 0 }) as {
     value: { x: number; y: number };
@@ -25,5 +29,5 @@ defineComponent((_, context) => {
     return { transform: `translate(${offset.value.x}px, ${offset.value.y}px)` };
   });
 
-  return { pan, greeting };
+  return { count, increment, pan };
 });
