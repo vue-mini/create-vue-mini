@@ -29,5 +29,5 @@ defineComponent((_, context) => {
     return { transform: `translate(${offset.value.x}px, ${offset.value.y}px)` };
   });
 
- return { count, increment, pan };
+  return { count, increment, pan };
 });
