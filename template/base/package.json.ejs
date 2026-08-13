@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=18.19.1 <19 || >=20.6.1"
+    "node": "^22.18.0 || >=24.11.0"
   },
   "scripts": {
     <%_ if (needsPrettier) { _%>
@@ -26,7 +26,7 @@
     "build": "cross-env NODE_ENV=production node build.js"
   },
   "dependencies": {
-    "@babel/runtime": "^7.29.7",
+    "@babel/runtime": "^8.0.0",
     "@vue-mini/core": "^1.2.15",
     <%_ if (needsPinia) { _%>
     "@vue-mini/pinia": "^1.0.0",
@@ -34,14 +34,14 @@
     trailing-comma
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
-    "@babel/plugin-transform-runtime": "^7.29.7",
-    "@babel/preset-env": "^7.29.7",
+    "@babel/core": "^8.0.1",
+    "@babel/plugin-transform-runtime": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
     <%_ if (needsTypeScript) { _%>
-    "@babel/preset-typescript": "^7.29.7",
+    "@babel/preset-typescript": "^8.0.1",
     <%_ } _%>
-    "@babel/traverse": "^7.29.8",
-    "@babel/types": "^7.29.8",
+    "@babel/traverse": "^8.0.4",
+    "@babel/types": "^8.0.4",
     <%_ if (needsEslint) { _%>
     "@eslint/js": "^10.0.1",
     <%_ } _%>
@@ -55,9 +55,9 @@
     <%_ if (needsVitest) { _%>
     "@vitest/coverage-v8": "^4.1.10",
     <%_ } _%>
-    "babel-plugin-autocomplete-index": "^0.2.0",
+    "babel-plugin-autocomplete-index": "^0.3.0",
+    "babel-plugin-inline-env-var": "^0.1.0",
     "babel-plugin-module-resolver": "^5.0.3",
-    "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "chokidar": "^5.0.0",
     "cross-env": "^10.1.0",
     <%_ if (needsEslint) { _%>

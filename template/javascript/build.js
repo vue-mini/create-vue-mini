@@ -7,9 +7,9 @@ import path from 'node:path';
 import process from 'node:process';
 import fs from 'fs-extra';
 import chokidar from 'chokidar';
-import babel from '@babel/core';
+import { transformFileAsync } from '@babel/core';
 import traverse from '@babel/traverse';
-import t from '@babel/types';
+import { isStringLiteral } from '@babel/types';
 import { minify } from 'terser';
 import postcss from 'postcss';
 import postcssrc from 'postcss-load-config';
@@ -89,11 +89,11 @@ async function bundleModule(module, pkg) {
 }
 
 function traverseAST(ast, pkg, babelOnly = false) {
-  traverse.default(ast, {
+  traverse(ast, {
     CallExpression({ node }) {
       if (
         node.callee.name !== 'require' ||
-        !t.isStringLiteral(node.arguments[0]) ||
+        !isStringLiteral(node.arguments[0]) ||
         node.arguments[0].value.startsWith('.') ||
         (babelOnly && !node.arguments[0].value.startsWith('@babel/runtime'))
       ) {
@@ -156,7 +156,7 @@ async function buildComponentLibrary(name) {
   return new Promise((resolve) => {
     const jobs = [];
     const tnm = async (filePath) => {
-      const result = await babel.transformFileAsync(filePath, { ast: true });
+      const result = await transformFileAsync(filePath, { ast: true });
       traverseAST(result.ast, 'src', true);
       const code = __PROD__
         ? (await minify(result.code, terserOptions)).code
@@ -201,7 +201,7 @@ async function scanDependencies() {
 async function processScript(filePath) {
   let ast, code;
   try {
-    const result = await babel.transformFileAsync(path.resolve(filePath), {
+    const result = await transformFileAsync(path.resolve(filePath), {
       ast: true,
     });
     ast = result.ast;

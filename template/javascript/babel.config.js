@@ -20,9 +20,11 @@ const config = {
     mutableTemplateObject: true,
     noClassCalls: true,
     noDocumentAll: true,
+    noIncompleteNsImportDetection: true,
     noNewArrows: true,
+    noUninitializedPrivateFieldAccess: true,
     objectRestNoSymbols: true,
-    privateFieldsAsProperties: true,
+    privateFieldsAsSymbols: true,
     pureGetters: true,
     setClassMethods: true,
     setComputedProperties: true,
@@ -35,7 +37,6 @@ const config = {
     [
       '@babel/preset-env',
       {
-        bugfixes: true,
         modules: 'commonjs',
       },
     ],
@@ -47,7 +48,7 @@ const config = {
         version: runtimeVersion,
       },
     ],
-    'transform-inline-environment-variables',
+    'inline-env-var',
     [
       'module-resolver',
       {
