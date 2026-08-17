@@ -30,6 +30,7 @@
       }
     ]
   },
+  "style": "v2",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"
 }
