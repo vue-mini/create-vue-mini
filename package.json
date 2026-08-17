@@ -11,7 +11,7 @@
     "template"
   ],
   "engines": {
-    "node": ">=18.19.1 <19 || >=20.6.1"
+    "node": "^22.18.0 || >=24.11.0"
   },
   "scripts": {
     "format": "prettier --check \"**/*.{js,ts,json,md}\"",
