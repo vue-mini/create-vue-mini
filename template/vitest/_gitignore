@@ -3,5 +3,4 @@ node_modules
 coverage
 dist
 *.log*
-.vscode
-.idea
+project.private.config.json
