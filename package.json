@@ -30,11 +30,11 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/ejs": "^3.1.5",
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.6.2",
     "@types/prompts": "^2.4.9",
-    "eslint": "^10.9.1",
-    "prettier": "^3.9.6",
+    "eslint": "^10.11.0",
+    "prettier": "^3.9.8",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.69.0"
+    "typescript-eslint": "^8.70.0"
   }
 }
