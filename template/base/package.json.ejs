@@ -26,7 +26,7 @@
     "build": "cross-env NODE_ENV=production node build.js"
   },
   "dependencies": {
-    "@babel/runtime": "^8.0.0",
+    "@babel/runtime": "^8.0.5",
     "@vue-mini/core": "^1.3.0-rc.3",
     <%_ if (needsPinia) { _%>
     "@vue-mini/pinia": "^1.0.0",
@@ -34,14 +34,14 @@
     trailing-comma
   },
   "devDependencies": {
-    "@babel/core": "^8.0.1",
-    "@babel/plugin-transform-runtime": "^8.0.1",
-    "@babel/preset-env": "^8.0.2",
+    "@babel/core": "^8.0.6",
+    "@babel/plugin-transform-runtime": "^8.0.6",
+    "@babel/preset-env": "^8.0.6",
     <%_ if (needsTypeScript) { _%>
     "@babel/preset-typescript": "^8.0.1",
     <%_ } _%>
-    "@babel/traverse": "^8.0.4",
-    "@babel/types": "^8.0.4",
+    "@babel/traverse": "^8.0.6",
+    "@babel/types": "^8.0.6",
     <%_ if (needsEslint) { _%>
     "@eslint/js": "^10.0.1",
     <%_ } _%>
@@ -50,18 +50,18 @@
     "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^1.0.0",
     <%_ if (needsTypeScript && needsVitest) { _%>
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.6.2",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.1",
     <%_ } _%>
-    "babel-plugin-autocomplete-index": "^0.3.0",
-    "babel-plugin-inline-env-var": "^0.1.0",
+    "babel-plugin-autocomplete-index": "^0.4.0",
+    "babel-plugin-inline-env-var": "^0.1.1",
     "babel-plugin-module-resolver": "^5.0.3",
     "chokidar": "^5.0.0",
     "cross-env": "^10.1.0",
     <%_ if (needsEslint) { _%>
-    "eslint": "^10.9.1",
+    "eslint": "^10.11.0",
     <%_ if (needsPrettier) { _%>
     "eslint-config-prettier": "^10.1.8",
     <%_ } _%>
@@ -72,15 +72,15 @@
     <%_ } _%>
     "kolorist": "^1.8.0",
     "local-pkg": "^1.2.1",
-    "postcss": "^8.5.26",
+    "postcss": "^8.5.28",
     "postcss-load-config": "^6.0.1",
     "postcss-pxtorpx-pro": "^2.0.0",
     <%_ if (needsPrettier) { _%>
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.8",
     <%_ } _%>
-    "rollup": "^4.63.1",
+    "rollup": "^4.63.4",
     <%_ if (needsStylelint) { _%>
-    "stylelint": "^17.14.1",
+    "stylelint": "^17.15.0",
     "stylelint-config-standard": "^40.0.0",
     <%_ } _%>
     "terser": "^5.51.2",
@@ -88,10 +88,10 @@
     "typescript": "^6.0.3",
     <%_ } _%>
     <%_ if (needsTypeScript && needsEslint) { _%>
-    "typescript-eslint": "^8.69.0",
+    "typescript-eslint": "^8.70.0",
     <%_ } _%>
     <%_ if (needsVitest) { _%>
-    "vitest": "^4.1.11",
+    "vitest": "^5.0.1",
     <%_ } _%>
     trailing-comma
   },
