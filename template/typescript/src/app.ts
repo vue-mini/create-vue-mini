@@ -1,3 +1,7 @@
 import { createApp } from '@vue-mini/core';
 
-createApp({}, { respectHints: true });
+createApp(
+  {},
+  // https://vuemini.org/guide/performance.html
+  { respectHints: true },
+);
