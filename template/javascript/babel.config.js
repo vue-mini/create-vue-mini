@@ -49,14 +49,7 @@ const config = {
       },
     ],
     'inline-env-var',
-    [
-      'module-resolver',
-      {
-        alias: {
-          '@': './src',
-        },
-      },
-    ],
+    'typescript-resolver',
     'autocomplete-index',
   ],
 };
