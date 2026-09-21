@@ -263,6 +263,23 @@ async function processStyle(filePath) {
   await fs.writeFile(destination, css);
 }
 
+async function processRootJson(filePath) {
+  const source = await fs.readFile(filePath, 'utf8');
+
+  const jsonObject = JSON.parse(source);
+
+  const exportStatement =
+    '"use strict";exports.__esModule = true;exports.default=' +
+    JSON.stringify(jsonObject) +
+    ';';
+
+  const destination = filePath
+    .replace('src', 'dist')
+    .replace(/\.json$/, '.json.js');
+  await fs.copy(filePath, destination);
+  await fs.writeFile(destination, exportStatement);
+}
+
 const cb = async (filePath) => {
   if (filePath.endsWith('.ts') || filePath.endsWith('.js')) {
     await processScript(filePath);
@@ -277,6 +294,10 @@ const cb = async (filePath) => {
   if (filePath.endsWith('.css')) {
     await processStyle(filePath);
     return;
+  }
+
+  if (/src\/[^/]+\.json$/.test(filePath)) {
+    await processRootJson(filePath);
   }
 
   await fs.copy(filePath, filePath.replace('src', 'dist'));
